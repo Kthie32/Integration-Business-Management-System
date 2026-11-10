@@ -49,6 +49,13 @@ Status key: ✅ done & verified · 🟡 in progress · ⚠️ built, not yet ver
 |-------|------|--------|-------|
 | 1 | Environment inspection | ✅ | See 01-project-overview.md §3 |
 | 1 | Repair interrupted `composer install` | ✅ | Laravel 13.40.0 boots; artisan works |
-| 1 | MySQL access verified | ✅ | 8.0.46, utf8mb4, strict mode; no IBMS database created yet |
-| 1–2 | Planning documents 01–07 | ⚠️ | Drafted, awaiting owner review |
-| 3–15 | All implementation | ⬜ | Starts after review and answers to doc 07 |
+| 1 | MySQL access verified | ✅ | 8.0.46, utf8mb4, strict mode |
+| 1–2 | Planning documents 01–07 | ✅ | Reviewed by owner 2026-11-10; section A of doc 07 answered |
+| 3 | Git repository | ✅ | Local repo, `main` baseline + `phase-3-foundation` branch. GitHub remote pending URL |
+| 3 | MySQL databases & app user | ✅ | `ibms`, `ibms_testing` (utf8mb4_unicode_ci); user `ibms`@localhost with rights on those two DBs only; password only in `.env` |
+| 3 | Environment configuration | ✅ | `APP_NAME="Magezi IBM"` (default only — editable in Settings, Phase 5), `Africa/Kampala`, encrypted DB sessions, database queue/cache |
+| 3 | Laravel Boost | ✅ | Guidelines + skills installed (`boost.json`) |
+| 3 | Core packages | ✅ | Fortify 1.41, spatie/laravel-permission 8.5, laravel-dompdf 3.1, Laravel Excel 4.0 — all install cleanly on Laravel 13 / PHP 8.5; configured in their phases |
+| 3 | Bootstrap 5 frontend | ✅ | Tailwind removed; Bootstrap 5.3.8, Bootstrap Icons, Chart.js, Tom Select, Sass via Vite; `npm run build` succeeds |
+| 3 | Test setup | ✅ | PHPUnit against MySQL `ibms_testing`; `FoundationConfigurationTest` verifies DB, strict mode, timezone, asset build — 6/6 passing |
+| 4–15 | Remaining implementation | ⬜ | Next: Phase 4 (authentication, users, roles, permissions) |

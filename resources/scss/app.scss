@@ -1,0 +1,36 @@
+// Magezi IBM — Bootstrap 5 theme
+// Brand colours are defaults; the organization's own branding is applied at runtime from Settings.
+
+$primary: #1e5aa8;
+$secondary: #5b6575;
+$success: #1f8a5b;
+$info: #2b8fb3;
+$warning: #d99a1e;
+$danger: #c0392b;
+$light: #f4f6f9;
+$dark: #1b2430;
+
+$font-family-sans-serif: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$font-size-base: 0.9375rem;
+$body-bg: #f4f6f9;
+$border-radius: 0.5rem;
+$border-radius-sm: 0.375rem;
+$border-radius-lg: 0.75rem;
+$card-border-color: rgba(27, 36, 48, 0.08);
+$card-cap-bg: #fff;
+$table-cell-padding-y: 0.65rem;
+$enable-shadows: false;
+
+@import 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+@import 'tom-select/dist/css/tom-select.bootstrap5.css';
+
+// Application layout tokens (sidebar, top bar) — used from Phase 5.
+:root {
+    --ibms-sidebar-width: 260px;
+    --ibms-sidebar-collapsed-width: 72px;
+    --ibms-sidebar-bg: #{$dark};
+    --ibms-sidebar-color: rgba(255, 255, 255, 0.75);
+    --ibms-sidebar-active-bg: rgba(255, 255, 255, 0.08);
+    --ibms-topbar-height: 60px;
+}

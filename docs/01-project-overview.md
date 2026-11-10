@@ -43,14 +43,14 @@ Installation, testing, deployment, user manual and maintenance guides are produc
 
 1. **Interrupted dependency install** — `vendor/` contained only partial packages and temp zips; `artisan`
    could not run. **Resolved:** `composer install` re-run successfully (no code changes).
-2. **Database** — `.env` currently uses SQLite (Laravel default). Will switch to MySQL with a dedicated
-   least-privilege user once credentials are agreed.
-3. **Frontend scaffold uses Tailwind CSS** — will be replaced with Bootstrap 5 per the mandated stack.
-4. **`APP_NAME=Laravel`** — will be set to the organization name.
-5. **`AGENTS.md`** asks for Laravel Boost (dev-only AI tooling) to be installed — will be added as a dev
-   dependency in Phase 3.
-6. **`../example/`** — a second, unrelated Laravel skeleton. Not used by IBMS; can be removed with the
-   owner's agreement.
+2. **Database** — was SQLite. **Resolved (Phase 3):** MySQL `ibms` / `ibms_testing` with dedicated user `ibms`.
+3. **Frontend scaffold used Tailwind CSS** — **Resolved (Phase 3):** replaced with Bootstrap 5.
+4. **`APP_NAME=Laravel`** — **Resolved:** default `Magezi IBM`; organization name and logo become editable
+   in Settings (Phase 5) so any business can brand the system.
+5. **Laravel Boost** — **Resolved:** installed as a dev dependency.
+6. **`../example/`** — on inspection this is **not** an empty skeleton: it contains earlier custom IBMS-like
+   work (Money, document numbering, line-item calculator, security middleware, quotation/invoice/receipt
+   migrations). It was **not deleted**; awaiting owner decision (doc 07, A4).
 
 ## 4. Scope summary
 

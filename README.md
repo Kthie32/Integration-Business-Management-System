@@ -1,58 +1,66 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Magezi IBM — Integrated Business Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A web-based business management system for quotations, invoicing, payments and receipts, inventory,
+customers and suppliers, employees, payroll (Uganda), requisitions with approval workflows, and reporting.
 
-## About Laravel
+The organization name, logo and branding are configurable, so the system can be set up for any business.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+> **Status:** Phase 3 (project foundation) complete. See [docs/06-implementation-roadmap.md](docs/06-implementation-roadmap.md) for the progress report.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Technology
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+PHP 8.5 · Laravel 13 (MVC) · MySQL 8 · Blade · Bootstrap 5 · Laravel Fortify · spatie/laravel-permission ·
+DomPDF · Laravel Excel · PHPUnit. Node.js is used only to build front-end assets with Vite.
 
-## Learning Laravel
+## Documentation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Document | |
+|----------|-|
+| [Project overview & environment](docs/01-project-overview.md) | Scope, environment report |
+| [Software Requirements Specification](docs/02-software-requirements-specification.md) | Functional and non-functional requirements |
+| [System architecture](docs/03-system-architecture.md) | Layers, technology decisions, folder structure |
+| [Database design](docs/04-database-design.md) | ERD and data dictionary |
+| [Roles & permissions](docs/05-roles-and-permissions.md) | Permission catalogue and role matrix |
+| [Roadmap & progress](docs/06-implementation-roadmap.md) | Phases and progress report |
+| [Assumptions & open questions](docs/07-assumptions-and-open-questions.md) | Decisions awaiting confirmation |
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Local installation
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Requirements: PHP 8.3+ with `bcmath`, `gd`, `intl`, `mbstring`, `pdo_mysql`, `zip`; Composer 2; MySQL 8; Node.js 20+.
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Create the databases and a dedicated user (as a MySQL administrator):
 
-## Contributing
+```sql
+CREATE DATABASE ibms CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE ibms_testing CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'ibms'@'localhost' IDENTIFIED BY '<strong password>';
+GRANT ALL PRIVILEGES ON ibms.* TO 'ibms'@'localhost';
+GRANT ALL PRIVILEGES ON ibms_testing.* TO 'ibms'@'localhost';
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Set `DB_PASSWORD` in `.env`, then:
 
-## Code of Conduct
+```bash
+php artisan migrate
+npm run build        # or: composer run dev  (server, queue, logs and Vite together)
+php artisan serve
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Tests
 
-## Security Vulnerabilities
+Tests run against the MySQL database `ibms_testing` (configured in `phpunit.xml`; credentials come from `.env`).
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan test --compact
+```
 
-## License
+## Security
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Never commit `.env`. Secrets (database password, `APP_KEY`, mail credentials) live only in environment configuration.

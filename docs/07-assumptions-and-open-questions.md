@@ -7,12 +7,12 @@ Each has a **proposed default**: if you agree, no action is needed; otherwise st
 
 ## A. Blocking before Phase 3 (project initialization)
 
-| # | Question | Proposed default |
-|---|----------|------------------|
-| A1 | Organization name (for `APP_NAME`, documents) and logo file | Placeholder "IBMS" until provided |
-| A2 | GitHub repository URL (GitHub CLI isn't installed, so the repo must be created by you or `gh` installed) | Private repo, `main` branch, push after Phase 3 |
-| A3 | MySQL: may I create databases `ibms` and `ibms_testing` and a dedicated user `ibms` (random password stored only in `.env`)? The app will not use root. | Yes |
-| A4 | Can the unused `../example/` Laravel folder be deleted? | Leave untouched |
+| # | Question | Decision / status |
+|---|----------|-------------------|
+| A1 | Organization name and logo | **Decided:** default name "Magezi IBM"; name, logo and branding are editable in Settings so the system can be customized for any business. |
+| A2 | GitHub repository URL | **Open** — local git repo created; remote added once a URL is provided. |
+| A3 | Create `ibms`, `ibms_testing` and a dedicated `ibms` MySQL user | **Done.** |
+| A4 | Delete `../example/`? | **Open** — owner said proceed, but inspection found custom code there (Money, numbering, line-item calculator, middleware, sales migrations). Kept until the owner confirms whether it should be deleted or reviewed for reuse. |
 
 ## B. Finance & sales
 
