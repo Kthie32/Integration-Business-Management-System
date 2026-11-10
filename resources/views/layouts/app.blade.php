@@ -37,6 +37,25 @@
             <nav class="app-sidebar-nav" aria-label="Main">
                 <x-nav-link route="dashboard" icon="speedometer2">Dashboard</x-nav-link>
 
+                @can('customers.view')
+                    <div class="app-sidebar-heading">Sales</div>
+                    <x-nav-link route="customers.index" active="customers.*" icon="person-vcard">Customers</x-nav-link>
+                @endcan
+
+                @can('suppliers.view')
+                    <div class="app-sidebar-heading">Procurement</div>
+                    <x-nav-link route="suppliers.index" active="suppliers.*" icon="truck">Suppliers</x-nav-link>
+                @endcan
+
+                @canany(['viewAny'], App\Models\Employee::class)
+                    <div class="app-sidebar-heading">People</div>
+                    <x-nav-link route="employees.index" active="employees.*" icon="person-badge">Employees</x-nav-link>
+                    <x-nav-link route="departments.index" active="departments.*" icon="diagram-3">Departments</x-nav-link>
+                @elsecanany(['viewAny'], App\Models\Department::class)
+                    <div class="app-sidebar-heading">People</div>
+                    <x-nav-link route="departments.index" active="departments.*" icon="diagram-3">Departments</x-nav-link>
+                @endcanany
+
                 @canany(['users.view', 'roles.manage', 'audit.view', 'settings.organization', 'settings.finance', 'settings.system'])
                     <div class="app-sidebar-heading">Administration</div>
                     @can('users.view')

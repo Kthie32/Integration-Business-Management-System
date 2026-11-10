@@ -112,7 +112,7 @@ enum SystemRole: string
                 'reports.inventory', 'reports.export',
             ],
             self::DepartmentHead => [
-                'items.view', 'stock.view', 'employees.view',
+                'items.view', 'stock.view', 'employees.view_department',
                 'requisitions.view_department', 'requisitions.approve',
                 'reports.requisitions',
             ],

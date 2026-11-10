@@ -21,7 +21,9 @@ class SettingsSeederTest extends TestCase
         $vat = TaxRate::query()->where('code', 'VAT')->sole();
         $this->assertSame('18.0000', $vat->rate);
         $this->assertTrue($vat->is_default);
-        $this->assertSame(count(DocumentType::cases()), DocumentSequence::query()->where('period', now()->format('Y'))->count());
+        $masterRecordTypes = array_filter(DocumentType::cases(), fn (DocumentType $type): bool => $type->isMasterRecord());
+        $this->assertSame(count(DocumentType::cases()) - count($masterRecordTypes), DocumentSequence::query()->where('period', now()->format('Y'))->count());
+        $this->assertSame(count($masterRecordTypes), DocumentSequence::query()->where('period', 'all')->count());
         $this->assertSame('INV', app(SettingsService::class)->get('numbering', 'invoice')['prefix']);
     }
 

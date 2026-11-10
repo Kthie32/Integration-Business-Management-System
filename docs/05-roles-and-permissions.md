@@ -20,7 +20,7 @@ Format `module.action`. Seeded by `PermissionSeeder`; not editable in the UI (co
 | Payments | `payments.view`, `payments.record`, `payments.reverse` |
 | Expenses | `expenses.view`, `expenses.create`, `expenses.void` |
 | Inventory | `items.view`, `items.manage`, `warehouses.manage`, `stock.view`, `stock.receive`, `stock.issue`, `stock.transfer`, `stock.adjust`, `stock.adjust_approve` |
-| Employees | `employees.view`, `employees.create`, `employees.update`, `employees.view_salary`, `employees.view_documents`, `employees.manage_documents`, `departments.manage` |
+| Employees | `employees.view`, `employees.view_department`, `employees.create`, `employees.update`, `employees.view_salary`, `employees.view_documents`, `employees.manage_documents`, `departments.manage` |
 | Payroll | `payroll.view`, `payroll.prepare`, `payroll.approve`, `payroll.mark_paid`, `payroll.configure`, `payslips.view_own` |
 | Requisitions | `requisitions.create`, `requisitions.view_own`, `requisitions.view_department`, `requisitions.view_all`, `requisitions.approve`, `requisitions.fulfil` |
 | Approvals | `approvals.configure` |

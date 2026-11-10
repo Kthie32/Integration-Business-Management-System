@@ -17,6 +17,9 @@ enum DocumentType: string
     case StockAdjustment = 'stock_adjustment';
     case PayrollRun = 'payroll_run';
     case Payslip = 'payslip';
+    case Customer = 'customer';
+    case Supplier = 'supplier';
+    case Employee = 'employee';
 
     public function label(): string
     {
@@ -31,6 +34,9 @@ enum DocumentType: string
             self::StockAdjustment => 'Stock adjustment',
             self::PayrollRun => 'Payroll run',
             self::Payslip => 'Payslip',
+            self::Customer => 'Customer code',
+            self::Supplier => 'Supplier code',
+            self::Employee => 'Employee number',
         };
     }
 
@@ -47,6 +53,9 @@ enum DocumentType: string
             self::StockAdjustment => 'ADJ',
             self::PayrollRun => 'PAY',
             self::Payslip => 'PSL',
+            self::Customer => 'CUS',
+            self::Supplier => 'SUP',
+            self::Employee => 'EMP',
         };
     }
 
@@ -59,8 +68,16 @@ enum DocumentType: string
     {
         return [
             'prefix' => $this->defaultPrefix(),
-            'padding' => 5,
-            'reset' => NumberingReset::Yearly->value,
+            'padding' => $this->isMasterRecord() ? 4 : 5,
+            'reset' => $this->isMasterRecord() ? NumberingReset::Never->value : NumberingReset::Yearly->value,
         ];
+    }
+
+    /**
+     * Codes for people and organizations (customers, suppliers, employees) run continuously, e.g. "CUS-0042".
+     */
+    public function isMasterRecord(): bool
+    {
+        return in_array($this, [self::Customer, self::Supplier, self::Employee], true);
     }
 }

@@ -83,7 +83,8 @@ class PermissionCatalog
                 'stock.adjust_approve' => 'Approve stock adjustments',
             ],
             'Employees' => [
-                'employees.view' => 'View employees',
+                'employees.view' => 'View all employees',
+                'employees.view_department' => 'View employees of departments headed',
                 'employees.create' => 'Register employees',
                 'employees.update' => 'Edit employees',
                 'employees.view_salary' => 'View salary and bank details',

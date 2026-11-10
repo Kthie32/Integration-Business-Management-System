@@ -57,6 +57,16 @@ class User extends Authenticatable
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    /**
+     * The employee record linked to this account (used for department-head rules and own payslips).
+     *
+     * @return BelongsTo<Employee, $this>
+     */
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
     public function isSuperAdministrator(): bool
     {
         return $this->hasRole(SystemRole::SuperAdministrator->value);
