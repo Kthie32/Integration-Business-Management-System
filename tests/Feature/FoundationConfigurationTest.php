@@ -31,9 +31,9 @@ class FoundationConfigurationTest extends TestCase
         $this->assertSame('Africa/Kampala', now()->getTimezone()->getName());
     }
 
-    public function test_home_page_renders_with_bootstrap_assets(): void
+    public function test_login_page_renders_with_bootstrap_assets(): void
     {
-        $response = $this->get('/');
+        $response = $this->get('/login');
 
         $response->assertOk();
         $response->assertSee(config('app.name'));

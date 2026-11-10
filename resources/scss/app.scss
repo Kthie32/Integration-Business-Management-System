@@ -34,3 +34,230 @@ $enable-shadows: false;
     --ibms-sidebar-active-bg: rgba(255, 255, 255, 0.08);
     --ibms-topbar-height: 60px;
 }
+
+// Application shell
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+.app-sidebar {
+    background: var(--ibms-sidebar-bg);
+    color: var(--ibms-sidebar-color);
+    width: var(--ibms-sidebar-width);
+
+    @include media-breakpoint-up(lg) {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        flex: 0 0 var(--ibms-sidebar-width);
+        overflow-y: auto;
+    }
+
+    &.offcanvas-lg {
+        --bs-offcanvas-width: var(--ibms-sidebar-width);
+        --bs-offcanvas-bg: var(--ibms-sidebar-bg);
+        --bs-offcanvas-color: var(--ibms-sidebar-color);
+    }
+}
+
+.app-sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    height: var(--ibms-topbar-height);
+    padding: 0 1.25rem;
+    color: #fff;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    .bi {
+        font-size: 1.35rem;
+    }
+}
+
+.app-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 1rem 0.75rem;
+    width: 100%;
+}
+
+.app-sidebar-heading {
+    margin: 1rem 0.75rem 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.app-sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: $border-radius-sm;
+    color: var(--ibms-sidebar-color);
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+        color: #fff;
+        background: var(--ibms-sidebar-active-bg);
+    }
+
+    &.active {
+        color: #fff;
+        background: var(--ibms-sidebar-active-bg);
+        box-shadow: inset 3px 0 0 $primary;
+    }
+}
+
+.app-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-topbar {
+    position: sticky;
+    top: 0;
+    z-index: $zindex-sticky;
+    display: flex;
+    align-items: center;
+    height: var(--ibms-topbar-height);
+    padding: 0 1.5rem;
+    background: #fff;
+    border-bottom: 1px solid $card-border-color;
+}
+
+.app-content {
+    flex: 1 1 auto;
+    padding: 1.5rem;
+
+    @include media-breakpoint-up(lg) {
+        padding: 2rem;
+    }
+}
+
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: rgba($primary, 0.12);
+    color: $primary;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.auth-page {
+    background: linear-gradient(160deg, rgba($primary, 0.08), $body-bg 45%);
+}
+
+.qr-code svg {
+    width: 180px;
+    height: 180px;
+    padding: 0.5rem;
+    background: #fff;
+    border: 1px solid $card-border-color;
+    border-radius: $border-radius;
+}
+
+// Collapsed sidebar (desktop only), toggled from the top bar and remembered in localStorage.
+@include media-breakpoint-up(lg) {
+    .app-sidebar {
+        transition: width 0.15s ease, flex-basis 0.15s ease;
+    }
+
+    .sidebar-collapsed {
+        .app-sidebar {
+            width: var(--ibms-sidebar-collapsed-width);
+            flex-basis: var(--ibms-sidebar-collapsed-width);
+            overflow-x: hidden;
+        }
+
+        .app-sidebar-brand {
+            justify-content: center;
+            padding: 0;
+        }
+
+        .app-sidebar-label,
+        .app-sidebar-link span,
+        .app-sidebar-heading {
+            display: none;
+        }
+
+        .app-sidebar-link {
+            justify-content: center;
+            padding: 0.65rem 0;
+
+            .bi {
+                font-size: 1.15rem;
+            }
+        }
+    }
+}
+
+.app-sidebar-logo {
+    max-height: 32px;
+    max-width: 40px;
+    object-fit: contain;
+    border-radius: $border-radius-sm;
+    background: #fff;
+}
+
+.auth-logo {
+    max-height: 64px;
+    max-width: 180px;
+    object-fit: contain;
+}
+
+.settings-logo-preview {
+    max-height: 80px;
+    max-width: 100%;
+    object-fit: contain;
+    padding: 0.5rem;
+    border: 1px solid $card-border-color;
+    border-radius: $border-radius;
+    background: #fff;
+}
+
+.min-w-0 {
+    min-width: 0;
+}
+
+// Dashboard statistic cards
+.stat-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: $border-radius;
+    font-size: 1.25rem;
+}
+
+// Notifications dropdown
+.notifications-menu {
+    width: min(360px, calc(100vw - 2rem));
+}
+
+.notifications-menu-list {
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.notification-count {
+    font-size: 0.65rem;
+}
+
+.list-group-item.unread {
+    background: rgba($primary, 0.05);
+}

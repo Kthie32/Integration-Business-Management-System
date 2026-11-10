@@ -10,7 +10,7 @@ Each has a **proposed default**: if you agree, no action is needed; otherwise st
 | # | Question | Decision / status |
 |---|----------|-------------------|
 | A1 | Organization name and logo | **Decided:** default name "Magezi IBM"; name, logo and branding are editable in Settings so the system can be customized for any business. |
-| A2 | GitHub repository URL | **Open** — local git repo created; remote added once a URL is provided. |
+| A2 | GitHub repository URL | **Decided:** https://github.com/Kthie32/Integration-Business-Management-System (remote `origin`). |
 | A3 | Create `ibms`, `ibms_testing` and a dedicated `ibms` MySQL user | **Done.** |
 | A4 | Delete `../example/`? | **Open** — owner said proceed, but inspection found custom code there (Money, numbering, line-item calculator, middleware, sales migrations). Kept until the owner confirms whether it should be deleted or reviewed for reuse. |
 
