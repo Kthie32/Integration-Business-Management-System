@@ -1,4 +1,5 @@
 import * as bootstrap from 'bootstrap';
+import { initSalesLineEditors } from './modules/line-items';
 
 window.bootstrap = bootstrap;
 
@@ -189,3 +190,6 @@ document.querySelectorAll('[data-reverse-url]').forEach((button) => {
         modal.querySelector('[data-reverse-text]').textContent = `Reverse: ${button.dataset.reverseLabel}.`;
     });
 });
+
+
+initSalesLineEditors();

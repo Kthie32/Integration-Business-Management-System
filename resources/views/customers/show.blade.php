@@ -1,3 +1,4 @@
+@inject('settings', App\Services\System\SettingsService::class)
 <x-layouts::app :title="$customer->name">
     <x-page-header :title="$customer->name" :subtitle="$customer->code.' · '.$customer->type->label()"
         :breadcrumbs="['Customers' => route('customers.index'), $customer->name => null]">
@@ -49,11 +50,39 @@
 
         <div class="col-lg-7">
             <div class="card h-100">
-                <div class="card-header fw-semibold">Quotations, invoices and payments</div>
-                <div class="card-body text-center text-secondary py-5">
-                    <i class="bi bi-receipt fs-2 d-block mb-2" aria-hidden="true"></i>
-                    This customer's sales history and outstanding balance will appear here once the sales modules are live.
+                <div class="card-header fw-semibold d-flex align-items-center">
+                    Quotations
+                    @can('create', App\Models\Quotation::class)
+                        @if ($customer->is_active)
+                            <a href="{{ route('quotations.create', ['customer' => $customer->id]) }}" class="btn btn-sm btn-outline-primary ms-auto"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>New quotation</a>
+                        @endif
+                    @endcan
                 </div>
+                @if ($quotations === null)
+                    <div class="card-body text-secondary small">You do not have access to quotations.</div>
+                @elseif ($quotations->isEmpty())
+                    <div class="card-body text-center text-secondary py-5">
+                        <i class="bi bi-file-earmark-text fs-2 d-block mb-2" aria-hidden="true"></i>
+                        No quotations yet. Invoices and payments will appear here once those modules are live.
+                    </div>
+                @else
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light"><tr><th scope="col">Quotation</th><th scope="col">Date</th><th scope="col" class="text-end">Total</th><th scope="col">Status</th></tr></thead>
+                            <tbody>
+                                @foreach ($quotations as $quotation)
+                                    <tr>
+                                        <td><a href="{{ route('quotations.show', $quotation) }}" class="text-decoration-none">{{ $quotation->displayNumber() }}</a></td>
+                                        <td class="small">{{ $settings->formatDate($quotation->quote_date) }}</td>
+                                        <td class="text-end"><x-money :amount="(string) $quotation->total" /></td>
+                                        <td><x-status-badge :status="$quotation->status" /></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer bg-transparent small"><a href="{{ route('quotations.index', ['customer' => $customer->id]) }}">All quotations for this customer</a></div>
+                @endif
             </div>
         </div>
 

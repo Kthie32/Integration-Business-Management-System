@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\QuotationStatus;
+use App\Models\Quotation;
 use App\Models\User;
 use App\Services\System\SettingsService;
 use Illuminate\Http\Request;
@@ -20,6 +22,12 @@ class DashboardController extends Controller
             'unreadNotifications' => $user->unreadNotifications()->count(),
             'lastLogin' => $user->last_login_at !== null ? $settings->formatDate($user->last_login_at) : 'First visit',
         ];
+
+        if ($user->can('quotations.view')) {
+            $stats['openQuotations'] = Quotation::query()
+                ->whereIn('status', [QuotationStatus::PendingApproval->value, QuotationStatus::Approved->value, QuotationStatus::Sent->value])
+                ->count();
+        }
 
         if ($user->can('users.view')) {
             $stats['activeUsers'] = User::query()->active()->count();

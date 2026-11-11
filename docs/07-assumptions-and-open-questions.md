@@ -27,6 +27,10 @@ Each has a **proposed default**: if you agree, no action is needed; otherwise st
 | B7 | **Expenses** module (needed for the dashboard "total expenses" and expense reports) — add it? | Yes, lightweight (doc 02 §3.8) |
 | B8 | **Goods receiving** from suppliers (GRN) — sufficient, or are full Purchase Orders required? | GRN only; purchase orders later if needed |
 | B9 | Will quotations/invoices/receipts be emailed to customers? Which SMTP provider? | PDF download/print only at first; email when SMTP is provided |
+| B10 | When does a quotation get its number (FR-QUO-05)? | **Applied in Phase 8:** when the draft is first submitted, so deleted drafts never leave gaps; a draft returned for changes keeps its number and can then only be cancelled, not deleted |
+| B11 | Quotation approval threshold behaviour | **Applied in Phase 8:** blank threshold = never; any amount (including 0) = approval needed when the total is at or above it; approver must hold `quotations.approve` and never be the author (Super Administrator included); approvers may approve or return the draft with a comment |
+| B12 | Revisions of finalised quotations (FR-QUO-04) | **Applied in Phase 8:** approved, sent, rejected or expired quotations can be revised; the revision is a draft numbered `<original>-R1`, `-R2` …; the original stays valid until the revision is submitted, then becomes "Superseded"; accepted, cancelled and superseded quotations cannot be revised |
+| B13 | Customer acceptance of an expired quotation | **Applied in Phase 8:** refused — prepare a revision with a new validity date instead |
 
 ## C. Inventory
 

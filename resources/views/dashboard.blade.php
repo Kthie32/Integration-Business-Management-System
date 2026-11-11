@@ -2,6 +2,11 @@
     <x-page-header title="Welcome, {{ $user->name }}" :subtitle="$user->getRoleNames()->implode(', ') ?: 'No role assigned'" />
 
     <div class="row g-3 mb-4">
+        @isset($stats['openQuotations'])
+            <div class="col-sm-6 col-xl-3">
+                <x-stat-card label="Open quotations" :value="number_format($stats['openQuotations'])" icon="file-earmark-text" :href="route('quotations.index')" />
+            </div>
+        @endisset
         @isset($stats['activeUsers'])
             <div class="col-sm-6 col-xl-3">
                 <x-stat-card label="Active users" :value="number_format($stats['activeUsers'])" icon="people" :href="route('admin.users.index', ['status' => 'active'])" />

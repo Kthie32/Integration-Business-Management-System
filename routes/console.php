@@ -17,3 +17,8 @@ Schedule::command('ibms:stock:low-stock-check')->dailyAt('07:00')->withoutOverla
  * Weekly ledger check: reports (without changing anything) any balance that differs from the movements.
  */
 Schedule::command('ibms:stock:reconcile')->weeklyOn(1, '06:00')->withoutOverlapping();
+
+/*
+ * Quotations past their validity date move to "Expired" shortly after midnight.
+ */
+Schedule::command('ibms:quotations:expire')->dailyAt('00:30')->withoutOverlapping();

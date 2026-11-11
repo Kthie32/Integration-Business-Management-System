@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Sales\StoreCustomerRequest;
 use App\Models\AuditLog;
 use App\Models\Customer;
+use App\Models\Quotation;
 use App\Services\Parties\CustomerService;
 use App\Services\System\SettingsService;
 use Illuminate\Http\RedirectResponse;
@@ -64,6 +65,9 @@ class CustomerController extends Controller
 
         return view('customers.show', [
             'customer' => $customer,
+            'quotations' => $request->user()->can('viewAny', Quotation::class)
+                ? $customer->quotations()->latest('quote_date')->latest('id')->limit(10)->get()
+                : null,
             'activity' => $request->user()->can('audit.view')
                 ? AuditLog::query()->forModel($customer)->with('user')->latest('id')->limit(10)->get()
                 : collect(),

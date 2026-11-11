@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -61,10 +62,19 @@ class Customer extends Model
     }
 
     /**
-     * Whether quotations, invoices or payments refer to this customer. Sales modules extend this check.
+     * @return HasMany<Quotation, $this>
+     */
+    public function quotations(): HasMany
+    {
+        return $this->hasMany(Quotation::class);
+    }
+
+    /**
+     * Whether quotations, invoices or payments refer to this customer. Later sales modules extend this check.
+     * Deleted draft quotations do not count.
      */
     public function hasTransactions(): bool
     {
-        return false;
+        return $this->quotations()->exists();
     }
 }

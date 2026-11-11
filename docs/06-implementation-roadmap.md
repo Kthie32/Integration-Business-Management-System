@@ -1,6 +1,6 @@
 # 06 — Implementation Roadmap & Progress Report
 
-Last updated: 2026-11-10
+Last updated: 2026-11-11
 
 ## 1. Phases
 
@@ -91,4 +91,10 @@ Status key: ✅ done & verified · 🟡 in progress · ⚠️ built, not yet ver
 | 7 | Stock card, levels, movements | ✅ | Per-item stock card with opening/closing and running balance by warehouse and date range; stock levels with valuation; filterable movement ledger |
 | 7 | Low stock & reconciliation | ✅ | In-app alert when a movement takes an item to/below its minimum (once per crossing, after commit) and daily 07:00 summary (`ibms:stock:low-stock-check`, honours the Settings switch) to users with `items.manage` or `stock.receive`; `ibms:stock:reconcile [--fix]` compares balances with the ledger (weekly report scheduled; fixes are audited) |
 | 7 | Tests | ✅ | Full suite 270 tests passing (76 new): ledger/average-cost/reversal/negative-stock/rollback tests, GRN and adjustment workflows with segregation of duties, operations, items, categories, warehouses, commands, and a role × ability matrix |
-| 8–15 | Remaining implementation | ⬜ | Next: Phase 8 (quotations) |
+| 8 | DocumentCalculator | ✅ | Shared quotation/invoice calculator (bcmath): line gross half-up to 2 dp → line discount → overall discount (percentage or amount) allocated pro-rata by net amount with the rounding remainder on the largest line → tax per line → totals; totals and the tax-rate value are stored on save, so later rate changes never alter documents; table-driven unit tests |
+| 8 | Quotations | ✅ | Draft CRUD with catalogue or free-text lines (Tom Select item search, client-side estimate, server recalculation), overall discount, notes/terms; statuses Draft → Awaiting approval → Approved → Sent → Accepted / Rejected / Expired, Cancelled, Superseded via an allowed-transitions map with status history; number on first submission (docs/07 B10) |
+| 8 | Approval & segregation | ✅ | Approval only at/above the Settings threshold (docs/07 B11); approver ≠ author enforced in policy and service; approvers notified in-app, author notified of approval/return |
+| 8 | Revisions, expiry, conversion hook | ✅ | Revisions `-R1`, `-R2` supersede the original on submission (docs/07 B12); daily 00:30 `ibms:quotations:expire`; `QuotationService::invoiceDraftData()` / `markConverted()` (converts once) ready for Phase 9 invoices; customers with quotations can no longer be deleted; customer page lists quotations; dashboard shows open quotations |
+| 8 | PDF & print | ✅ | DomPDF download and print view with organization name, logo (embedded), contact details, TIN, bank details, signatory and footer; DRAFT/CANCELLED/EXPIRED/SUPERSEDED watermark; downloads audited |
+| 8 | Tests | ✅ | Full suite 322 tests passing (52 new): calculator unit tests, controller (validation, totals, edit/delete rules), workflow (approval segregation, return, send/accept/reject, cancel, revisions, expiry, conversion once), PDF/print and role × ability matrix |
+| 9–15 | Remaining implementation | ⬜ | Next: Phase 9 (invoices & payments) |
