@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\QuotationStatus;
+use App\Models\Invoice;
+use App\Models\Payment;
 use App\Models\Quotation;
 use App\Models\User;
 use App\Services\System\SettingsService;
@@ -27,6 +29,21 @@ class DashboardController extends Controller
             $stats['openQuotations'] = Quotation::query()
                 ->whereIn('status', [QuotationStatus::PendingApproval->value, QuotationStatus::Approved->value, QuotationStatus::Sent->value])
                 ->count();
+        }
+
+        if ($user->can('invoices.view')) {
+            $stats['overdueInvoices'] = Invoice::query()->overdue()->count();
+
+            if ($user->can('dashboard.view_financials')) {
+                $stats['receivables'] = $settings->formatMoney((string) (Invoice::query()->open()->sum('balance_due') ?: '0'));
+            }
+        }
+
+        if ($user->can('payments.view') && $user->can('dashboard.view_financials')) {
+            $stats['collectedThisMonth'] = $settings->formatMoney((string) (Payment::query()
+                ->completed()
+                ->whereBetween('payment_date', [today()->startOfMonth()->toDateString(), today()->toDateString()])
+                ->sum('amount') ?: '0'));
         }
 
         if ($user->can('users.view')) {

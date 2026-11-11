@@ -1,13 +1,17 @@
 <?php
 
 use App\Http\Controllers\Sales\CustomerController;
+use App\Http\Controllers\Sales\InvoiceController;
+use App\Http\Controllers\Sales\InvoiceDocumentController;
+use App\Http\Controllers\Sales\InvoiceWorkflowController;
+use App\Http\Controllers\Sales\PaymentController;
 use App\Http\Controllers\Sales\QuotationController;
 use App\Http\Controllers\Sales\QuotationDocumentController;
 use App\Http\Controllers\Sales\QuotationWorkflowController;
 use Illuminate\Support\Facades\Route;
 
 /*
- * Sales: customers and quotations (invoices and payments are added in later phases).
+ * Sales: customers, quotations, invoices and payments.
  */
 
 Route::resource('customers', CustomerController::class);
@@ -29,3 +33,22 @@ Route::controller(QuotationDocumentController::class)->prefix('quotations/{quota
     Route::get('pdf', 'pdf')->middleware('throttle:30,1')->name('pdf');
     Route::get('print', 'print')->name('print');
 });
+
+Route::post('quotations/{quotation}/convert', [InvoiceWorkflowController::class, 'convertQuotation'])->name('quotations.convert');
+
+Route::resource('invoices', InvoiceController::class);
+
+Route::controller(InvoiceWorkflowController::class)->prefix('invoices/{invoice}')->name('invoices.')->group(function (): void {
+    Route::post('issue', 'issue')->name('issue');
+    Route::post('void', 'void')->name('void');
+    Route::post('copy', 'copy')->name('copy');
+});
+
+Route::controller(InvoiceDocumentController::class)->prefix('invoices/{invoice}')->name('invoices.')->group(function (): void {
+    Route::get('pdf', 'pdf')->middleware('throttle:30,1')->name('pdf');
+    Route::get('print', 'print')->name('print');
+});
+
+Route::post('invoices/{invoice}/payments', [PaymentController::class, 'store'])->name('invoices.payments.store');
+Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+Route::post('payments/{payment}/reverse', [PaymentController::class, 'reverse'])->name('payments.reverse');

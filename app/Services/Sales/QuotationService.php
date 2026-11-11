@@ -7,9 +7,9 @@ use App\Enums\DocumentType;
 use App\Enums\QuotationStatus;
 use App\Exceptions\BusinessRuleException;
 use App\Models\Quotation;
-use App\Models\TaxRate;
 use App\Models\User;
 use App\Notifications\SystemMessage;
+use App\Services\Sales\Concerns\WritesDocumentLines;
 use App\Services\System\AuditLogger;
 use App\Services\System\NumberingService;
 use App\Services\System\SettingsService;
@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Notification;
  */
 class QuotationService
 {
+    use WritesDocumentLines;
+
     public function __construct(
         private DocumentCalculator $calculator,
         private NumberingService $numbering,
@@ -45,7 +47,7 @@ class QuotationService
             ])->save();
             $quotation->recordStatusChange(null, QuotationStatus::Draft);
 
-            $this->replaceLines($quotation, $data['lines']);
+            $this->writeLines($quotation, $data['lines']);
 
             return $quotation;
         });
@@ -61,7 +63,7 @@ class QuotationService
             $this->ensureStatus($quotation, [QuotationStatus::Draft], 'Only a draft quotation can be edited.');
 
             $quotation->update($this->headerAttributes($data));
-            $this->replaceLines($quotation, $data['lines']);
+            $this->writeLines($quotation, $data['lines']);
 
             return $quotation;
         });
@@ -267,15 +269,7 @@ class QuotationService
             ])->save();
             $revision->recordStatusChange(null, QuotationStatus::Draft, "Revision of {$quotation->number}");
 
-            $this->replaceLines($revision, $quotation->items->map(fn ($line): array => [
-                'item_id' => $line->item_id,
-                'description' => $line->description,
-                'quantity' => (string) $line->quantity,
-                'unit' => $line->unit,
-                'unit_price' => (string) $line->unit_price,
-                'discount_amount' => (string) $line->discount_amount,
-                'tax_rate_id' => $line->tax_rate_id,
-            ])->all());
+            $this->writeLines($revision, self::editableLines($quotation));
 
             return $revision;
         });
@@ -351,6 +345,24 @@ class QuotationService
         return $quotation;
     }
 
+    /**
+     * Undo a conversion when the draft invoice created from the quotation is deleted, so the accepted
+     * quotation can be invoiced again. Call inside the transaction that deletes the draft.
+     */
+    public function releaseConversion(Quotation $quotation, ?string $invoiceReference = null): Quotation
+    {
+        $quotation = $this->lock($quotation);
+
+        if (! $quotation->isConverted()) {
+            return $quotation;
+        }
+
+        $quotation->forceFill(['converted_at' => null, 'converted_by' => null])->save();
+        $this->auditLogger->log('conversion_released', $quotation, 'Draft invoice'.($invoiceReference ? " {$invoiceReference}" : '').' deleted; quotation can be invoiced again');
+
+        return $quotation;
+    }
+
     public function requiresApproval(Quotation $quotation): bool
     {
         $threshold = $this->settings->get('finance', 'quotation_approval_threshold');
@@ -365,55 +377,6 @@ class QuotationService
     public function validityDays(): int
     {
         return max(1, (int) $this->settings->get('finance', 'quotation_validity_days', 30));
-    }
-
-    /**
-     * @param  list<array<string, mixed>>  $lines
-     */
-    private function replaceLines(Quotation $quotation, array $lines): void
-    {
-        $lines = array_values($lines);
-
-        if ($lines === []) {
-            throw new BusinessRuleException('Add at least one line.');
-        }
-
-        $taxRates = TaxRate::query()->whereIn('id', array_filter(array_column($lines, 'tax_rate_id')))->get()->keyBy('id');
-
-        $prepared = array_map(function (array $line) use ($taxRates): array {
-            $taxRate = filled($line['tax_rate_id'] ?? null) ? $taxRates->get((int) $line['tax_rate_id']) : null;
-
-            return [
-                'item_id' => filled($line['item_id'] ?? null) ? (int) $line['item_id'] : null,
-                'description' => trim((string) $line['description']),
-                'quantity' => (string) $line['quantity'],
-                'unit' => filled($line['unit'] ?? null) ? (string) $line['unit'] : null,
-                'unit_price' => (string) $line['unit_price'],
-                'discount_amount' => filled($line['discount_amount'] ?? null) ? (string) $line['discount_amount'] : '0',
-                'tax_rate_id' => $taxRate?->id,
-                'tax_rate' => $taxRate !== null ? (string) $taxRate->rate : '0',
-            ];
-        }, $lines);
-
-        $result = $this->calculator->calculate(
-            $prepared,
-            $quotation->document_discount_type,
-            (string) ($quotation->document_discount_value ?? '0'),
-        );
-
-        $quotation->items()->delete();
-
-        foreach ($prepared as $index => $line) {
-            $quotation->items()->create([...$line, ...$result['lines'][$index], 'sort_order' => $index]);
-        }
-
-        $quotation->forceFill([
-            'subtotal' => $result['subtotal'],
-            'discount_total' => $result['discount_total'],
-            'document_discount_amount' => $result['document_discount_amount'],
-            'tax_total' => $result['tax_total'],
-            'total' => $result['total'],
-        ])->save();
     }
 
     /**

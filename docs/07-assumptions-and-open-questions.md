@@ -1,6 +1,6 @@
 # 07 — Assumptions & Open Questions
 
-Last updated: 2026-11-10
+Last updated: 2026-11-11
 
 These are decisions about organizational policy that should not be invented by the developer.
 Each has a **proposed default**: if you agree, no action is needed; otherwise state the change.
@@ -31,6 +31,13 @@ Each has a **proposed default**: if you agree, no action is needed; otherwise st
 | B11 | Quotation approval threshold behaviour | **Applied in Phase 8:** blank threshold = never; any amount (including 0) = approval needed when the total is at or above it; approver must hold `quotations.approve` and never be the author (Super Administrator included); approvers may approve or return the draft with a comment |
 | B12 | Revisions of finalised quotations (FR-QUO-04) | **Applied in Phase 8:** approved, sent, rejected or expired quotations can be revised; the revision is a draft numbered `<original>-R1`, `-R2` …; the original stays valid until the revision is submitted, then becomes "Superseded"; accepted, cancelled and superseded quotations cannot be revised |
 | B13 | Customer acceptance of an expired quotation | **Applied in Phase 8:** refused — prepare a revision with a new validity date instead |
+| B14 | When does an invoice get its number, and when does stock leave? | **Applied in Phase 9:** on issue (FR-IVC-03), in one transaction with the stock issue; if any stocked line is short of stock nothing is issued and the number is released. Lines for the same item are combined into one `sale_issue` movement; service and free-text lines move no stock; a warehouse is required only when the invoice has stocked items (default warehouse pre-selected). Invoices cannot be issued with a future date or a zero total |
+| B15 | Due date | **Applied in Phase 9:** editable on the draft; left empty it is the invoice date + the customer's payment terms (organization default if none) |
+| B16 | Void and corrections (B4) | **Applied in Phase 9:** only an *issued* invoice with no completed payments can be voided (`invoices.void`, reason required); its stock movements are reversed; a "corrected copy" creates a new draft linked to the voided invoice. No segregation of duties on voiding (Finance Officer by default) |
+| B17 | Converting a quotation (FR-QUO-08) | **Applied in Phase 9:** creates a draft invoice linked to the quotation, keeping the tax rate the customer accepted; deleting that draft releases the quotation so it can be converted again; requires both `quotations.convert` and `invoices.create` |
+| B18 | Payment rules (B5) | **Applied in Phase 9:** one payment → one issued invoice; amount > 0 and ≤ balance (overpayments rejected); date not in the future nor before the invoice date; every method except cash needs a transaction reference, unique per method among completed payments (a reversed payment frees its reference); payments are numbered `PMT-YYYY-NNNNN`; reversal needs `payments.reverse` and a reason and returns the invoice to Partially paid / Issued |
+| B19 | Receipts | **Deferred to Phase 10** as planned in the roadmap: receipts will be generated from payments (FR-PAY-04); Phase 9 payments carry their own number in the meantime |
+| B20 | Overdue invoices and credit limits | **Applied in Phase 9:** "Overdue" is derived (issued/partially paid, balance > 0, due date passed) and shown as a badge and filter; a daily 07:15 check (`ibms:invoices:overdue-check`) sends one in-app summary of newly overdue invoices to users who record payments or void invoices, each invoice announced once. A customer credit limit only produces a warning on the draft, it does not block issuing |
 
 ## C. Inventory
 

@@ -22,3 +22,8 @@ Schedule::command('ibms:stock:reconcile')->weeklyOn(1, '06:00')->withoutOverlapp
  * Quotations past their validity date move to "Expired" shortly after midnight.
  */
 Schedule::command('ibms:quotations:expire')->dailyAt('00:30')->withoutOverlapping();
+
+/*
+ * Finance staff hear once about each invoice that passes its due date with a balance outstanding.
+ */
+Schedule::command('ibms:invoices:overdue-check')->dailyAt('07:15')->withoutOverlapping();

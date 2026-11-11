@@ -38,6 +38,12 @@
                     <i class="bi bi-hand-thumbs-down me-1" aria-hidden="true"></i>Rejected
                 </button>
             @endcan
+            @can('convert', $quotation)
+                <form method="POST" action="{{ route('quotations.convert', $quotation) }}" data-confirm="Create a draft invoice from this quotation? A quotation can be invoiced once.">
+                    @csrf
+                    <button type="submit" class="btn btn-success"><i class="bi bi-receipt me-1" aria-hidden="true"></i>Convert to invoice</button>
+                </form>
+            @endcan
             @can('revise', $quotation)
                 <form method="POST" action="{{ route('quotations.revise', $quotation) }}" data-confirm="Prepare a new revision of this quotation?">
                     @csrf
@@ -194,7 +200,15 @@
                             <dt class="col-5 text-secondary fw-normal">Accepted</dt><dd class="col-7">{{ $settings->formatDate($quotation->accepted_at) }}</dd>
                         @endif
                         @if ($quotation->converted_at)
-                            <dt class="col-5 text-secondary fw-normal">Invoiced</dt><dd class="col-7">{{ $settings->formatDate($quotation->converted_at) }} by {{ $quotation->converter?->name }}</dd>
+                            <dt class="col-5 text-secondary fw-normal">Invoiced</dt>
+                            <dd class="col-7">
+                                {{ $settings->formatDate($quotation->converted_at) }} by {{ $quotation->converter?->name }}
+                                @if ($quotation->invoice)
+                                    @can('view', $quotation->invoice)
+                                        · <a href="{{ route('invoices.show', $quotation->invoice) }}" class="text-decoration-none">{{ $quotation->invoice->displayNumber() }}</a>
+                                    @endcan
+                                @endif
+                            </dd>
                         @endif
                         @if ($quotation->parent)
                             <dt class="col-5 text-secondary fw-normal">Revises</dt>

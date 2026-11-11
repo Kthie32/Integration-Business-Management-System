@@ -143,13 +143,14 @@ class Item extends Model
     }
 
     /**
-     * Whether any stock movement, goods receipt or adjustment refers to this item. Such items are deactivated, not deleted.
+     * Whether any stock movement, goods receipt, adjustment or invoice refers to this item. Such items are deactivated, not deleted.
      */
     public function hasTransactions(): bool
     {
         return $this->stockMovements()->exists()
             || GoodsReceiptItem::query()->where('item_id', $this->id)->exists()
-            || StockAdjustmentItem::query()->where('item_id', $this->id)->exists();
+            || StockAdjustmentItem::query()->where('item_id', $this->id)->exists()
+            || InvoiceItem::query()->where('item_id', $this->id)->exists();
     }
 
     /**

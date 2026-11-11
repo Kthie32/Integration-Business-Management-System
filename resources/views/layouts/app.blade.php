@@ -37,10 +37,16 @@
             <nav class="app-sidebar-nav" aria-label="Main">
                 <x-nav-link route="dashboard" icon="speedometer2">Dashboard</x-nav-link>
 
-                @canany(['customers.view', 'quotations.view'])
+                @canany(['customers.view', 'quotations.view', 'invoices.view', 'payments.view'])
                     <div class="app-sidebar-heading">Sales</div>
                     @can('quotations.view')
                         <x-nav-link route="quotations.index" active="quotations.*" icon="file-earmark-text">Quotations</x-nav-link>
+                    @endcan
+                    @can('invoices.view')
+                        <x-nav-link route="invoices.index" active="invoices.*" icon="receipt">Invoices</x-nav-link>
+                    @endcan
+                    @can('payments.view')
+                        <x-nav-link route="payments.index" active="payments.*" icon="cash-coin">Payments</x-nav-link>
                     @endcan
                     @can('customers.view')
                         <x-nav-link route="customers.index" active="customers.*" icon="person-vcard">Customers</x-nav-link>

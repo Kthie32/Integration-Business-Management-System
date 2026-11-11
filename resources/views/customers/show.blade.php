@@ -39,6 +39,10 @@
                         <dt class="col-sm-5 text-secondary fw-normal">Payment terms</dt><dd class="col-sm-7">{{ $customer->payment_terms_days }} days</dd>
                         <dt class="col-sm-5 text-secondary fw-normal">Credit limit</dt>
                         <dd class="col-sm-7">@if ($customer->credit_limit !== null)<x-money :amount="$customer->credit_limit" />@else No limit @endif</dd>
+                        @if ($outstanding !== null)
+                            <dt class="col-sm-5 text-secondary fw-normal">Outstanding balance</dt>
+                            <dd class="col-sm-7 fw-semibold"><x-money :amount="$outstanding" /></dd>
+                        @endif
                     </dl>
                     @if ($customer->notes)
                         <hr>
@@ -63,7 +67,7 @@
                 @elseif ($quotations->isEmpty())
                     <div class="card-body text-center text-secondary py-5">
                         <i class="bi bi-file-earmark-text fs-2 d-block mb-2" aria-hidden="true"></i>
-                        No quotations yet. Invoices and payments will appear here once those modules are live.
+                        No quotations yet.
                     </div>
                 @else
                     <div class="table-responsive">
@@ -85,6 +89,81 @@
                 @endif
             </div>
         </div>
+
+        @if ($invoices !== null)
+            <div class="col-lg-7">
+                <div class="card h-100">
+                    <div class="card-header fw-semibold d-flex align-items-center">
+                        Invoices
+                        @can('create', App\Models\Invoice::class)
+                            @if ($customer->is_active)
+                                <a href="{{ route('invoices.create', ['customer' => $customer->id]) }}" class="btn btn-sm btn-outline-primary ms-auto"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>New invoice</a>
+                            @endif
+                        @endcan
+                    </div>
+                    @if ($invoices->isEmpty())
+                        <div class="card-body text-center text-secondary py-5">
+                            <i class="bi bi-receipt fs-2 d-block mb-2" aria-hidden="true"></i>
+                            No invoices yet.
+                        </div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead class="table-light"><tr><th scope="col">Invoice</th><th scope="col">Due</th><th scope="col" class="text-end">Total</th><th scope="col" class="text-end">Balance</th><th scope="col">Status</th></tr></thead>
+                                <tbody>
+                                    @foreach ($invoices as $invoice)
+                                        <tr>
+                                            <td><a href="{{ route('invoices.show', $invoice) }}" class="text-decoration-none">{{ $invoice->displayNumber() }}</a></td>
+                                            <td @class(['small', 'text-danger fw-semibold' => $invoice->isOverdue()])>{{ $settings->formatDate($invoice->due_date) }}</td>
+                                            <td class="text-end"><x-money :amount="(string) $invoice->total" /></td>
+                                            <td class="text-end"><x-money :amount="(string) $invoice->balance_due" /></td>
+                                            <td>
+                                                <x-status-badge :status="$invoice->status" />
+                                                @if ($invoice->isOverdue())
+                                                    <x-status-badge label="Overdue" color="danger" />
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer bg-transparent small"><a href="{{ route('invoices.index', ['customer' => $customer->id]) }}">All invoices for this customer</a></div>
+                    @endif
+                </div>
+            </div>
+        @endif
+
+        @if ($payments !== null)
+            <div class="col-lg-5">
+                <div class="card h-100">
+                    <div class="card-header fw-semibold">Payments</div>
+                    @if ($payments->isEmpty())
+                        <div class="card-body text-center text-secondary py-5">
+                            <i class="bi bi-cash-coin fs-2 d-block mb-2" aria-hidden="true"></i>
+                            No payments yet.
+                        </div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead class="table-light"><tr><th scope="col">Payment</th><th scope="col">Date</th><th scope="col" class="text-end">Amount</th><th scope="col">Status</th></tr></thead>
+                                <tbody>
+                                    @foreach ($payments as $payment)
+                                        <tr>
+                                            <td class="small">{{ $payment->number }}<div class="text-secondary">{{ $payment->invoice->displayNumber() }}</div></td>
+                                            <td class="small">{{ $settings->formatDate($payment->payment_date) }}</td>
+                                            <td @class(['text-end', 'text-decoration-line-through text-secondary' => ! $payment->isCompleted()])><x-money :amount="(string) $payment->amount" /></td>
+                                            <td><x-status-badge :status="$payment->status" /></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer bg-transparent small"><a href="{{ route('payments.index', ['customer' => $customer->id]) }}">All payments from this customer</a></div>
+                    @endif
+                </div>
+            </div>
+        @endif
 
         @if ($activity->isNotEmpty())
             <div class="col-12">

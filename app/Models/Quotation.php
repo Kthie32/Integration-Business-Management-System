@@ -88,6 +88,16 @@ class Quotation extends Model
     }
 
     /**
+     * The invoice created from this quotation (drafts included).
+     *
+     * @return HasOne<Invoice, $this>
+     */
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(Invoice::class);
+    }
+
+    /**
      * @return BelongsTo<User, $this>
      */
     public function creator(): BelongsTo

@@ -86,7 +86,7 @@ class QuotationController extends Controller
 
         return view('quotations.show', [
             'quotation' => $quotation->load(
-                'customer', 'items.item', 'creator', 'approver', 'converter', 'parent', 'revisionChild', 'statusHistories.user',
+                'customer', 'items.item', 'creator', 'approver', 'converter', 'invoice', 'parent', 'revisionChild', 'statusHistories.user',
             ),
             'requiresApproval' => $quotation->isDraft() && $this->quotations->requiresApproval($quotation),
         ]);

@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Sales\StoreCustomerRequest;
 use App\Models\AuditLog;
 use App\Models\Customer;
+use App\Models\Invoice;
+use App\Models\Payment;
 use App\Models\Quotation;
 use App\Services\Parties\CustomerService;
 use App\Services\System\SettingsService;
@@ -67,6 +69,13 @@ class CustomerController extends Controller
             'customer' => $customer,
             'quotations' => $request->user()->can('viewAny', Quotation::class)
                 ? $customer->quotations()->latest('quote_date')->latest('id')->limit(10)->get()
+                : null,
+            'invoices' => $request->user()->can('viewAny', Invoice::class)
+                ? $customer->invoices()->latest('invoice_date')->latest('id')->limit(10)->get()
+                : null,
+            'outstanding' => $request->user()->can('viewAny', Invoice::class) ? $customer->outstandingBalance() : null,
+            'payments' => $request->user()->can('viewAny', Payment::class)
+                ? $customer->payments()->with('invoice')->latest('payment_date')->latest('id')->limit(10)->get()
                 : null,
             'activity' => $request->user()->can('audit.view')
                 ? AuditLog::query()->forModel($customer)->with('user')->latest('id')->limit(10)->get()

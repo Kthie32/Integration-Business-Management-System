@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\CustomerType;
 use App\Models\Concerns\Auditable;
+use App\Support\Money;
 use Database\Factories\CustomerFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -70,11 +71,34 @@ class Customer extends Model
     }
 
     /**
-     * Whether quotations, invoices or payments refer to this customer. Later sales modules extend this check.
-     * Deleted draft quotations do not count.
+     * @return HasMany<Invoice, $this>
+     */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Whether quotations, invoices or payments refer to this customer. Deleted drafts do not count.
      */
     public function hasTransactions(): bool
     {
-        return $this->quotations()->exists();
+        return $this->quotations()->exists() || $this->invoices()->exists() || $this->payments()->exists();
+    }
+
+    /**
+     * The total still owed on this customer's issued invoices.
+     */
+    public function outstandingBalance(): string
+    {
+        return Money::of((string) ($this->invoices()->open()->sum('balance_due') ?: '0'))->toDecimal();
     }
 }
