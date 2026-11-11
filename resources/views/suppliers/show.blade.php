@@ -49,11 +49,38 @@
 
         <div class="col-lg-7">
             <div class="card h-100">
-                <div class="card-header fw-semibold">Goods received, expenses and requisitions</div>
-                <div class="card-body text-center text-secondary py-5">
-                    <i class="bi bi-box-seam fs-2 d-block mb-2" aria-hidden="true"></i>
-                    Transactions with this supplier will appear here once the inventory, expense and requisition modules are live.
+                <div class="card-header fw-semibold d-flex align-items-center">
+                    Goods received
+                    @can('create', App\Models\GoodsReceipt::class)
+                        <a href="{{ route('goods-receipts.create', ['supplier' => $supplier->id]) }}" class="ms-auto small">Receive goods</a>
+                    @endcan
                 </div>
+                @if ($goodsReceipts->isEmpty())
+                    <div class="card-body text-center text-secondary py-5">
+                        <i class="bi bi-box-seam fs-2 d-block mb-2" aria-hidden="true"></i>
+                        No goods received from this supplier yet. Expenses and requisition fulfilments will appear here once those modules are live.
+                    </div>
+                @else
+                    @inject('settings', App\Services\System\SettingsService::class)
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr><th scope="col">GRN</th><th scope="col">Date</th><th scope="col">Warehouse</th><th scope="col" class="text-end">Total</th><th scope="col">Status</th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($goodsReceipts as $receipt)
+                                    <tr>
+                                        <td><a href="{{ route('goods-receipts.show', $receipt) }}" class="text-decoration-none">{{ $receipt->displayNumber() }}</a></td>
+                                        <td class="small text-nowrap">{{ $settings->formatDate($receipt->received_at) }}</td>
+                                        <td class="small">{{ $receipt->warehouse->name }}</td>
+                                        <td class="text-end"><x-money :amount="(string) $receipt->total" /></td>
+                                        <td><x-status-badge :status="$receipt->status" /></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </div>
         </div>
 

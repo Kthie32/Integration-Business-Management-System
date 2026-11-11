@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Procurement;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Procurement\StoreSupplierRequest;
 use App\Models\AuditLog;
+use App\Models\GoodsReceipt;
 use App\Models\Supplier;
 use App\Services\Parties\SupplierService;
 use Illuminate\Http\RedirectResponse;
@@ -56,6 +57,9 @@ class SupplierController extends Controller
 
         return view('suppliers.show', [
             'supplier' => $supplier,
+            'goodsReceipts' => $request->user()->can('viewAny', GoodsReceipt::class)
+                ? $supplier->goodsReceipts()->with('warehouse')->latest('received_at')->latest('id')->limit(10)->get()
+                : collect(),
             'activity' => $request->user()->can('audit.view')
                 ? AuditLog::query()->forModel($supplier)->with('user')->latest('id')->limit(10)->get()
                 : collect(),

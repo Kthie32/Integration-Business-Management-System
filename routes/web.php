@@ -36,5 +36,6 @@ Route::middleware('auth')->group(function (): void {
         require __DIR__.'/modules/sales.php';
         require __DIR__.'/modules/procurement.php';
         require __DIR__.'/modules/hr.php';
+        require __DIR__.'/modules/inventory.php';
     });
 });

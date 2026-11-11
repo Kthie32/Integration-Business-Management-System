@@ -98,3 +98,94 @@ document.querySelectorAll('[data-permission-group]').forEach((group) => {
     boxes.forEach((box) => box.addEventListener('change', sync));
     sync();
 });
+
+/**
+ * Line-item editors: [data-line-editor] holds rows ([data-line]) in [data-lines], a <template data-line-template>
+ * whose field names contain __INDEX__, an [data-add-line] button and [data-remove-line] buttons.
+ * Rows with quantity and cost fields show a line total and a grand total.
+ */
+document.querySelectorAll('[data-line-editor]').forEach((editor) => {
+    const body = editor.querySelector('[data-lines]');
+    const template = editor.querySelector('[data-line-template]');
+    const grandTotal = editor.querySelector('[data-grand-total]');
+    const formatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 });
+    let nextIndex = body.querySelectorAll('[data-line]').length;
+
+    const recalculate = () => {
+        let total = 0;
+
+        body.querySelectorAll('[data-line]').forEach((row) => {
+            const quantity = parseFloat(row.querySelector('[data-line-quantity]')?.value) || 0;
+            const cost = parseFloat(row.querySelector('[data-line-cost]')?.value) || 0;
+            const lineTotal = row.querySelector('[data-line-total]');
+
+            total += quantity * cost;
+
+            if (lineTotal) {
+                lineTotal.textContent = formatter.format(quantity * cost);
+            }
+        });
+
+        if (grandTotal) {
+            grandTotal.textContent = formatter.format(total);
+        }
+    };
+
+    editor.querySelector('[data-add-line]')?.addEventListener('click', () => {
+        const html = template.innerHTML.replaceAll('__INDEX__', String(nextIndex++));
+        body.insertAdjacentHTML('beforeend', html);
+        body.lastElementChild?.querySelector('select, input')?.focus();
+    });
+
+    body.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-remove-line]');
+
+        if (!button) {
+            return;
+        }
+
+        const rows = body.querySelectorAll('[data-line]');
+        const row = button.closest('[data-line]');
+
+        if (rows.length > 1) {
+            row.remove();
+        } else {
+            row.querySelectorAll('input').forEach((input) => { input.value = ''; });
+            row.querySelectorAll('select').forEach((select) => { select.value = ''; });
+        }
+
+        recalculate();
+    });
+
+    body.addEventListener('input', recalculate);
+
+    body.addEventListener('change', (event) => {
+        const select = event.target.closest('[data-line-item]');
+
+        if (!select) {
+            return;
+        }
+
+        const cost = select.selectedOptions[0]?.dataset.cost;
+        const costInput = select.closest('[data-line]').querySelector('[data-line-cost]');
+
+        if (costInput && cost && !costInput.value) {
+            costInput.value = String(parseFloat(cost));
+        }
+
+        recalculate();
+    });
+
+    recalculate();
+});
+
+/**
+ * The stock movement "Reverse" dialog: each button carries the form action and a description of the movement.
+ */
+document.querySelectorAll('[data-reverse-url]').forEach((button) => {
+    button.addEventListener('click', () => {
+        const modal = document.getElementById(button.dataset.bsTarget.slice(1));
+        modal.querySelector('[data-reverse-form]').action = button.dataset.reverseUrl;
+        modal.querySelector('[data-reverse-text]').textContent = `Reverse: ${button.dataset.reverseLabel}.`;
+    });
+});

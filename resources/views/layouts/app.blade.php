@@ -47,6 +47,29 @@
                     <x-nav-link route="suppliers.index" active="suppliers.*" icon="truck">Suppliers</x-nav-link>
                 @endcan
 
+                @canany(['items.view', 'stock.view', 'stock.receive', 'stock.adjust', 'stock.adjust_approve', 'warehouses.manage'])
+                    <div class="app-sidebar-heading">Inventory</div>
+                    @can('items.view')
+                        <x-nav-link route="items.index" active="items.*" icon="box-seam">Items</x-nav-link>
+                    @endcan
+                    @can('stock.view')
+                        <x-nav-link route="stock.levels" active="stock.levels" icon="stack">Stock levels</x-nav-link>
+                        <x-nav-link route="stock.movements" active="stock.movements" icon="arrow-left-right">Stock movements</x-nav-link>
+                    @endcan
+                    @canany(['stock.view', 'stock.receive'])
+                        <x-nav-link route="goods-receipts.index" active="goods-receipts.*" icon="box-arrow-in-down">Goods received</x-nav-link>
+                    @endcanany
+                    @canany(['stock.adjust', 'stock.adjust_approve', 'stock.view'])
+                        <x-nav-link route="stock-adjustments.index" active="stock-adjustments.*" icon="sliders">Adjustments</x-nav-link>
+                    @endcanany
+                    @can('items.view')
+                        <x-nav-link route="item-categories.index" active="item-categories.*" icon="tags">Categories</x-nav-link>
+                    @endcan
+                    @canany(['warehouses.manage', 'stock.view'])
+                        <x-nav-link route="warehouses.index" active="warehouses.*" icon="building">Warehouses</x-nav-link>
+                    @endcanany
+                @endcanany
+
                 @canany(['viewAny'], App\Models\Employee::class)
                     <div class="app-sidebar-heading">People</div>
                     <x-nav-link route="employees.index" active="employees.*" icon="person-badge">Employees</x-nav-link>

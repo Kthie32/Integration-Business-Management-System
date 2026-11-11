@@ -20,6 +20,7 @@ enum DocumentType: string
     case Customer = 'customer';
     case Supplier = 'supplier';
     case Employee = 'employee';
+    case Item = 'item';
 
     public function label(): string
     {
@@ -37,6 +38,7 @@ enum DocumentType: string
             self::Customer => 'Customer code',
             self::Supplier => 'Supplier code',
             self::Employee => 'Employee number',
+            self::Item => 'Item code',
         };
     }
 
@@ -56,6 +58,7 @@ enum DocumentType: string
             self::Customer => 'CUS',
             self::Supplier => 'SUP',
             self::Employee => 'EMP',
+            self::Item => 'ITM',
         };
     }
 
@@ -74,10 +77,10 @@ enum DocumentType: string
     }
 
     /**
-     * Codes for people and organizations (customers, suppliers, employees) run continuously, e.g. "CUS-0042".
+     * Codes for people, organizations and items (customers, suppliers, employees, items) run continuously, e.g. "CUS-0042".
      */
     public function isMasterRecord(): bool
     {
-        return in_array($this, [self::Customer, self::Supplier, self::Employee], true);
+        return in_array($this, [self::Customer, self::Supplier, self::Employee, self::Item], true);
     }
 }

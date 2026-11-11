@@ -36,6 +36,9 @@ Each has a **proposed default**: if you agree, no action is needed; otherwise st
 | C2 | Stock valuation method | Weighted average cost |
 | C3 | Do stock adjustments need approval? | Yes, by `stock.adjust_approve` holder other than the creator |
 | C4 | Batch/expiry or serial-number tracking? | Not required |
+| C5 | Who may void a posted goods received note or reverse a direct issue/transfer? | **Applied in Phase 7:** a `stock.adjust_approve` holder (Manager by default) who did not record it — the same segregation as adjustments |
+| C6 | Item codes | **Applied in Phase 7:** continuous `ITM-0001` numbering, configurable in Settings → Document numbering |
+| C7 | Valuation for stock received with no known cost (adjustment increases) | **Applied in Phase 7:** the warehouse's current average cost, falling back to the item's standard cost |
 
 ## D. HR & payroll (Uganda)
 
