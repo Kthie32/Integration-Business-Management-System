@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Sales\CustomerController;
+use App\Http\Controllers\Sales\CustomerStatementController;
 use App\Http\Controllers\Sales\InvoiceController;
 use App\Http\Controllers\Sales\InvoiceDocumentController;
 use App\Http\Controllers\Sales\InvoiceWorkflowController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Sales\PaymentController;
 use App\Http\Controllers\Sales\QuotationController;
 use App\Http\Controllers\Sales\QuotationDocumentController;
 use App\Http\Controllers\Sales\QuotationWorkflowController;
+use App\Http\Controllers\Sales\ReceiptController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,6 +17,12 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::resource('customers', CustomerController::class);
+
+Route::controller(CustomerStatementController::class)->prefix('customers/{customer}/statement')->name('customers.statement')->group(function (): void {
+    Route::get('/', 'show');
+    Route::get('pdf', 'pdf')->middleware('throttle:30,1')->name('.pdf');
+    Route::get('print', 'print')->name('.print');
+});
 
 Route::resource('quotations', QuotationController::class);
 
@@ -52,3 +60,11 @@ Route::controller(InvoiceDocumentController::class)->prefix('invoices/{invoice}'
 Route::post('invoices/{invoice}/payments', [PaymentController::class, 'store'])->name('invoices.payments.store');
 Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
 Route::post('payments/{payment}/reverse', [PaymentController::class, 'reverse'])->name('payments.reverse');
+
+Route::get('receipts', [ReceiptController::class, 'index'])->name('receipts.index');
+Route::controller(ReceiptController::class)->prefix('receipts/{receipt}')->name('receipts.')->group(function (): void {
+    Route::get('/', 'show')->name('show');
+    Route::get('pdf', 'pdf')->middleware('throttle:30,1')->name('pdf');
+    Route::get('print', 'print')->name('print');
+    Route::post('reverse', 'reverse')->name('reverse');
+});

@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             SettingsSeeder::class,
             InventorySeeder::class,
+            ExpenseCategorySeeder::class,
             SuperAdminSeeder::class,
         ]);
     }

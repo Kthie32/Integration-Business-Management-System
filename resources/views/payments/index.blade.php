@@ -56,6 +56,7 @@
         <x-slot:head>
             <tr>
                 <th scope="col">Payment</th>
+                <th scope="col">Receipt</th>
                 <th scope="col">Date</th>
                 <th scope="col">Customer</th>
                 <th scope="col">Invoice</th>
@@ -69,6 +70,13 @@
         @foreach ($payments as $payment)
             <tr>
                 <td class="fw-semibold">{{ $payment->number }}</td>
+                <td class="small">
+                    @if ($payment->receipt)
+                        <a href="{{ route('receipts.show', $payment->receipt) }}" class="text-decoration-none">{{ $payment->receipt->number }}</a>
+                    @else
+                        —
+                    @endif
+                </td>
                 <td class="small text-nowrap">{{ $settings->formatDate($payment->payment_date) }}</td>
                 <td class="small">{{ $payment->customer->name }}</td>
                 <td class="small">

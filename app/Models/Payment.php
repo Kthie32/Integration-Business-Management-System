@@ -9,6 +9,7 @@ use App\Models\Concerns\HasStatusHistory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Money received against one issued invoice. Payments are never edited or deleted; a mistaken payment is
@@ -79,6 +80,16 @@ class Payment extends Model
     public function reverser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reversed_by');
+    }
+
+    /**
+     * The receipt issued with this payment (FR-PAY-04).
+     *
+     * @return HasOne<Receipt, $this>
+     */
+    public function receipt(): HasOne
+    {
+        return $this->hasOne(Receipt::class);
     }
 
     public function isCompleted(): bool

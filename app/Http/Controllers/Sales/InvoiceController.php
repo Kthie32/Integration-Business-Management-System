@@ -107,7 +107,7 @@ class InvoiceController extends Controller
         return view('invoices.show', [
             'invoice' => $invoice,
             'payments' => $request->user()->can('payments.view')
-                ? $invoice->payments()->with('recorder', 'reverser')->get()
+                ? $invoice->payments()->with('recorder', 'reverser', 'receipt')->get()
                 : null,
             'stockMovements' => $request->user()->can('stock.view')
                 ? $invoice->stockMovements()->with('item', 'warehouse')->get()

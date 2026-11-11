@@ -47,10 +47,19 @@
                     @endcan
                     @can('payments.view')
                         <x-nav-link route="payments.index" active="payments.*" icon="cash-coin">Payments</x-nav-link>
+                        <x-nav-link route="receipts.index" active="receipts.*" icon="receipt-cutoff">Receipts</x-nav-link>
                     @endcan
                     @can('customers.view')
                         <x-nav-link route="customers.index" active="customers.*" icon="person-vcard">Customers</x-nav-link>
                     @endcan
+                @endcanany
+
+                @canany(['expenses.view', 'settings.finance'])
+                    <div class="app-sidebar-heading">Finance</div>
+                    @can('expenses.view')
+                        <x-nav-link route="expenses.index" active="expenses.*" icon="wallet">Expenses</x-nav-link>
+                    @endcan
+                    <x-nav-link route="expense-categories.index" active="expense-categories.*" icon="tags">Expense categories</x-nav-link>
                 @endcanany
 
                 @can('suppliers.view')

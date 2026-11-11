@@ -17,7 +17,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Records customer payments against issued invoices and reverses them. One payment settles one invoice
+ * Records customer payments against issued invoices, issuing a receipt for each in the same transaction
+ * (FR-PAY-04), and reverses them, which voids the receipt (FR-PAY-05). One payment settles one invoice
  * and may not exceed its balance (docs/07 B5). The invoice row is locked for the whole operation, so two
  * people recording payments at once cannot overpay it.
  */
@@ -28,6 +29,7 @@ class PaymentService
         private NumberingService $numbering,
         private SettingsService $settings,
         private AuditLogger $auditLogger,
+        private ReceiptService $receipts,
     ) {}
 
     /**
@@ -89,6 +91,7 @@ class PaymentService
                 'created_by' => $actor->id,
             ])->save();
             $payment->recordStatusChange(null, PaymentStatus::Completed);
+            $payment->setRelation('receipt', $this->receipts->issueFor($payment, $actor));
 
             $this->invoices->refreshPaymentStatus($invoice, "Payment {$payment->number} of ".$this->settings->formatMoney($amount));
 
@@ -118,6 +121,7 @@ class PaymentService
                 'reversal_reason' => $reason,
             ]);
             $payment->transitionTo(PaymentStatus::Reversed, $reason);
+            $this->receipts->voidFor($payment, $actor, $reason);
 
             $this->invoices->refreshPaymentStatus($invoice, "Payment {$payment->number} reversed: {$reason}");
             $this->auditLogger->log('reversed', $payment, "Reversed payment {$payment->number} on invoice {$invoice->number}: {$reason}");

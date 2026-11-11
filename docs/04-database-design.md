@@ -112,14 +112,14 @@ Only business-specific columns are listed; `id`, timestamps, `created_by`, `upda
 | **invoices** | number (unique, null while draft), customer_id, quotation_id (FK null, unique), warehouse_id (null), invoice_date, due_date (idx), status (idx), currency, subtotal, discount_total, tax_total, total, amount_paid, balance_due, issued_at, issued_by, voided_at, voided_by, void_reason, notes, terms, deleted_at |
 | **invoice_items** | same shape as quotation_items |
 | **payments** | invoice_id, customer_id, payment_date (idx), amount, method, reference, payer_name, notes, status (`completed`/`reversed`), reversed_at, reversed_by, reversal_reason — UNIQUE(method, reference) where reference not null |
-| **receipts** | number (unique), payment_id (FK unique), issued_at, status (`valid`/`void`) |
+| **receipts** | number (unique), payment_id (FK unique), invoice_id, customer_id, receipt_date (idx), amount, issued_at, status (`valid`/`void`), voided_at/by, void_reason |
 | **status_histories** | model_type/model_id (morph, idx), from_status, to_status, comment, user_id, created_at |
 
 ### 3.6 Expenses
 | Table | Key columns |
 |-------|-------------|
-| **expense_categories** | name, code, is_active |
-| **expenses** | number (unique), expense_date (idx), expense_category_id, supplier_id (null), department_id (null), amount, tax_amount, payment_method, reference, description, attachment_path, source_type/source_id (morph null — requisition fulfilment), status (`recorded`/`void`), void_reason |
+| **expense_categories** | name (unique), code (unique null), description, is_active |
+| **expenses** | number (unique, null while draft), expense_date (idx), expense_category_id, supplier_id (null), department_id (null), payee_name (null), amount (incl. tax), tax_amount, payment_method, reference, description, notes, attachment_path/name/mime/size, source_type/source_id (morph null — requisition fulfilment), status (`draft`/`recorded`/`void`), recorded_at/by, voided_at/by, void_reason |
 
 ### 3.7 HR & payroll
 | Table | Key columns |

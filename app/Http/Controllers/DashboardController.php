@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\QuotationStatus;
+use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Quotation;
@@ -43,6 +44,13 @@ class DashboardController extends Controller
             $stats['collectedThisMonth'] = $settings->formatMoney((string) (Payment::query()
                 ->completed()
                 ->whereBetween('payment_date', [today()->startOfMonth()->toDateString(), today()->toDateString()])
+                ->sum('amount') ?: '0'));
+        }
+
+        if ($user->can('expenses.view') && $user->can('dashboard.view_financials')) {
+            $stats['expensesThisMonth'] = $settings->formatMoney((string) (Expense::query()
+                ->recorded()
+                ->whereBetween('expense_date', [today()->startOfMonth()->toDateString(), today()->toDateString()])
                 ->sum('amount') ?: '0'));
         }
 

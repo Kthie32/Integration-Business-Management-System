@@ -44,7 +44,7 @@ class PaymentController extends Controller
             ->when($filters['to'] ?? null, fn ($query, string $to) => $query->whereDate('payment_date', '<=', $to));
 
         return view('payments.index', [
-            'payments' => (clone $query)->with('invoice', 'customer')->latest('payment_date')->latest('id')->paginate(25)->withQueryString(),
+            'payments' => (clone $query)->with('invoice', 'customer', 'receipt')->latest('payment_date')->latest('id')->paginate(25)->withQueryString(),
             'collected' => (string) ((clone $query)->completed()->sum('amount') ?: '0'),
             'filters' => $filters,
             'customers' => Customer::query()->orderBy('name')->pluck('name', 'id'),

@@ -3,6 +3,9 @@
     <x-page-header :title="$customer->name" :subtitle="$customer->code.' · '.$customer->type->label()"
         :breadcrumbs="['Customers' => route('customers.index'), $customer->name => null]">
         <x-slot:actions>
+            @can('viewStatement', $customer)
+                <a href="{{ route('customers.statement', $customer) }}" class="btn btn-outline-secondary"><i class="bi bi-journal-text me-1" aria-hidden="true"></i>Statement</a>
+            @endcan
             @can('update', $customer)
                 <a href="{{ route('customers.edit', $customer) }}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Edit</a>
             @endcan

@@ -184,7 +184,13 @@
                                 <tbody>
                                     @foreach ($payments as $payment)
                                         <tr>
-                                            <td class="fw-semibold">{{ $payment->number }}<div class="small text-secondary fw-normal">by {{ $payment->recorder?->name ?? '—' }}</div></td>
+                                            <td class="fw-semibold">
+                                                {{ $payment->number }}
+                                                @if ($payment->receipt)
+                                                    <div class="small fw-normal"><a href="{{ route('receipts.show', $payment->receipt) }}" class="text-decoration-none"><i class="bi bi-receipt-cutoff me-1" aria-hidden="true"></i>{{ $payment->receipt->number }}</a></div>
+                                                @endif
+                                                <div class="small text-secondary fw-normal">by {{ $payment->recorder?->name ?? '—' }}</div>
+                                            </td>
                                             <td class="small text-nowrap">{{ $settings->formatDate($payment->payment_date) }}</td>
                                             <td class="small">{{ $payment->method->label() }}</td>
                                             <td class="small">{{ $payment->reference ?? '—' }}@if ($payment->payer_name)<div class="text-secondary">{{ $payment->payer_name }}</div>@endif</td>

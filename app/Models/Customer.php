@@ -87,6 +87,14 @@ class Customer extends Model
     }
 
     /**
+     * @return HasMany<Receipt, $this>
+     */
+    public function receipts(): HasMany
+    {
+        return $this->hasMany(Receipt::class);
+    }
+
+    /**
      * Whether quotations, invoices or payments refer to this customer. Deleted drafts do not count.
      */
     public function hasTransactions(): bool
