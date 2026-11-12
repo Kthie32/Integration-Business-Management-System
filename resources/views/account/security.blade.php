@@ -22,6 +22,11 @@
 
                     @if ($user->hasTwoFactorEnabled())
                         @if (in_array(session('status'), ['two-factor-authentication-confirmed', 'recovery-codes-generated'], true))
+                            @if (session('status') === 'two-factor-authentication-confirmed')
+                                <div class="alert alert-success small">
+                                    <strong>Two-factor authentication is now on.</strong> From now on you'll enter a code from your authenticator app when you sign in.
+                                </div>
+                            @endif
                             <div class="alert alert-warning small">
                                 <strong>Save these recovery codes</strong> somewhere safe. Each one lets you sign in once if you lose your phone.
                             </div>
@@ -30,6 +35,7 @@
                                     <div>{{ $code }}</div>
                                 @endforeach
                             </div>
+                            <a href="{{ route('dashboard') }}" class="btn btn-primary mb-3">I've saved these codes — continue to the dashboard</a>
                         @endif
 
                         <div class="d-flex flex-wrap gap-2">

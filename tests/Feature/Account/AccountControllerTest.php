@@ -40,6 +40,30 @@ class AccountControllerTest extends TestCase
         $this->actingAs($this->user)->get(route('account.security'))->assertOk()->assertSee('Two-factor authentication');
     }
 
+    public function test_security_page_offers_continue_to_dashboard_after_two_factor_is_confirmed(): void
+    {
+        $user = User::factory()->withTwoFactor()->withRole(SystemRole::GeneralEmployee)->create();
+
+        $this->actingAs($user)
+            ->withSession(['status' => 'two-factor-authentication-confirmed'])
+            ->get(route('account.security'))
+            ->assertOk()
+            ->assertSee('Two-factor authentication is now on.')
+            ->assertSee('recovery-code-1')
+            ->assertSee('continue to the dashboard')
+            ->assertSee(route('dashboard'), false);
+    }
+
+    public function test_continue_button_is_hidden_without_a_fresh_confirmation(): void
+    {
+        $user = User::factory()->withTwoFactor()->withRole(SystemRole::GeneralEmployee)->create();
+
+        $this->actingAs($user)
+            ->get(route('account.security'))
+            ->assertOk()
+            ->assertDontSee('continue to the dashboard');
+    }
+
     public function test_user_updates_own_profile_including_phone(): void
     {
         $this->actingAs($this->user)->put(route('user-profile-information.update'), [

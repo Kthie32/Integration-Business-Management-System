@@ -52,6 +52,11 @@ $enable-shadows: false;
         height: 100vh;
         flex: 0 0 var(--ibms-sidebar-width);
         overflow-y: auto;
+
+        // Bootstrap's .offcanvas-lg forces a transparent background at this width; keep the sidebar dark.
+        &.offcanvas-lg {
+            background-color: var(--ibms-sidebar-bg) !important;
+        }
     }
 
     &.offcanvas-lg {
