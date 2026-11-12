@@ -193,3 +193,10 @@ document.querySelectorAll('[data-reverse-url]').forEach((button) => {
 
 
 initSalesLineEditors();
+
+/**
+ * Charts on reports and the dashboard. Chart.js is only downloaded on pages that have a chart.
+ */
+if (document.querySelector('canvas[data-chart]')) {
+    import('./modules/charts').then(({ initCharts }) => initCharts());
+}

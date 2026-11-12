@@ -2,80 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\QuotationStatus;
-use App\Models\Expense;
-use App\Models\Invoice;
-use App\Models\Payment;
-use App\Models\PayrollRun;
-use App\Models\Quotation;
-use App\Models\Requisition;
-use App\Models\User;
-use App\Services\Approval\ApprovalInbox;
+use App\Services\Reports\DashboardService;
 use App\Services\System\SettingsService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * Landing page after sign-in. Module widgets are added as each module is built.
+ * Landing page after sign-in: permission-aware summary cards, charts and recent transactions (FR-DSH-01…05).
  */
 class DashboardController extends Controller
 {
-    public function __invoke(Request $request, SettingsService $settings, ApprovalInbox $inbox): View
+    public function __invoke(Request $request, SettingsService $settings, DashboardService $dashboard): View
     {
         $user = $request->user()->load('roles');
+        $period = $dashboard->period($request->query('period'), $request->query('from'), $request->query('to'));
 
-        $stats = [
-            'unreadNotifications' => $user->unreadNotifications()->count(),
-            'lastLogin' => $user->last_login_at !== null ? $settings->formatDate($user->last_login_at) : 'First visit',
-        ];
-
-        if ($user->can('quotations.view')) {
-            $stats['openQuotations'] = Quotation::query()
-                ->whereIn('status', [QuotationStatus::PendingApproval->value, QuotationStatus::Approved->value, QuotationStatus::Sent->value])
-                ->count();
-        }
-
-        if ($user->can('invoices.view')) {
-            $stats['overdueInvoices'] = Invoice::query()->overdue()->count();
-
-            if ($user->can('dashboard.view_financials')) {
-                $stats['receivables'] = $settings->formatMoney((string) (Invoice::query()->open()->sum('balance_due') ?: '0'));
-            }
-        }
-
-        if ($user->can('payments.view') && $user->can('dashboard.view_financials')) {
-            $stats['collectedThisMonth'] = $settings->formatMoney((string) (Payment::query()
-                ->completed()
-                ->whereBetween('payment_date', [today()->startOfMonth()->toDateString(), today()->toDateString()])
-                ->sum('amount') ?: '0'));
-        }
-
-        if ($user->can('expenses.view') && $user->can('dashboard.view_financials')) {
-            $stats['expensesThisMonth'] = $settings->formatMoney((string) (Expense::query()
-                ->recorded()
-                ->whereBetween('expense_date', [today()->startOfMonth()->toDateString(), today()->toDateString()])
-                ->sum('amount') ?: '0'));
-        }
-
-        $stats['myApprovals'] = $inbox->countFor($user);
-
-        if ($user->can('viewAny', Requisition::class)) {
-            $stats['pendingRequisitions'] = Requisition::query()->visibleTo($user)->pendingApproval()->count();
-        }
-
-        if ($user->can('payroll.view') && $user->can('dashboard.view_payroll')) {
-            $lastPayroll = PayrollRun::query()->released()->orderByDesc('period_year')->orderByDesc('period_month')->first();
-            $stats['lastPayroll'] = $lastPayroll === null ? null : [
-                'total' => $settings->formatMoney((string) $lastPayroll->total_net),
-                'hint' => $lastPayroll->periodLabel().' · '.$lastPayroll->status->label(),
-                'url' => route('payroll-runs.show', $lastPayroll),
-            ];
-        }
-
-        if ($user->can('users.view')) {
-            $stats['activeUsers'] = User::query()->active()->count();
-        }
-
-        return view('dashboard', ['user' => $user, 'stats' => $stats]);
+        return view('dashboard', [
+            'user' => $user,
+            'period' => $period,
+            'periods' => DashboardService::PERIODS,
+            ...$dashboard->build($user, $period),
+            'personal' => [
+                'unreadNotifications' => $user->unreadNotifications()->count(),
+                'lastLogin' => $user->last_login_at !== null ? $settings->formatDate($user->last_login_at) : 'First visit',
+            ],
+        ]);
     }
 }

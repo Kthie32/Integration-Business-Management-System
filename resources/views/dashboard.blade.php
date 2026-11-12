@@ -1,56 +1,41 @@
+@inject('settings', App\Services\System\SettingsService::class)
 <x-layouts::app title="Dashboard">
-    <x-page-header title="Welcome, {{ $user->name }}" :subtitle="$user->getRoleNames()->implode(', ') ?: 'No role assigned'" />
+    <x-page-header title="Welcome, {{ $user->name }}" :subtitle="$user->getRoleNames()->implode(', ') ?: 'No role assigned'">
+        <x-slot:actions>
+            @canany(['reports.financial', 'reports.sales', 'reports.inventory', 'reports.payroll', 'reports.requisitions'])
+                <a href="{{ route('reports.index') }}" class="btn btn-outline-primary"><i class="bi bi-bar-chart-line me-1" aria-hidden="true"></i>Reports</a>
+            @endcanany
+        </x-slot:actions>
+    </x-page-header>
+
+    <form method="GET" action="{{ route('dashboard') }}" class="d-flex flex-wrap align-items-end gap-2 mb-3" aria-label="Dashboard period">
+        <div class="btn-group" role="group" aria-label="Period">
+            @foreach (array_diff_key($periods, ['custom' => true]) as $key => $label)
+                <a href="{{ route('dashboard', ['period' => $key]) }}" @class(['btn btn-sm', 'btn-primary' => $period['key'] === $key, 'btn-outline-primary' => $period['key'] !== $key])
+                    @if ($period['key'] === $key) aria-current="true" @endif>{{ $label }}</a>
+            @endforeach
+        </div>
+        <input type="hidden" name="period" value="custom">
+        <div>
+            <label for="dashboard-from" class="form-label small mb-0">From</label>
+            <input type="date" name="from" id="dashboard-from" class="form-control form-control-sm" value="{{ $period['from']->toDateString() }}">
+        </div>
+        <div>
+            <label for="dashboard-to" class="form-label small mb-0">To</label>
+            <input type="date" name="to" id="dashboard-to" class="form-control form-control-sm" value="{{ $period['to']->toDateString() }}">
+        </div>
+        <button type="submit" @class(['btn btn-sm', 'btn-primary' => $period['key'] === 'custom', 'btn-outline-secondary' => $period['key'] !== 'custom'])>Apply dates</button>
+        <span class="small text-secondary ms-sm-2">{{ $settings->formatDate($period['from']) }} – {{ $settings->formatDate($period['to']) }}</span>
+    </form>
 
     <div class="row g-3 mb-4">
-        @isset($stats['openQuotations'])
+        @foreach ($cards as $card)
             <div class="col-sm-6 col-xl-3">
-                <x-stat-card label="Open quotations" :value="number_format($stats['openQuotations'])" icon="file-earmark-text" :href="route('quotations.index')" />
+                <x-stat-card :label="$card['label']" :value="$card['value']" :icon="$card['icon']" :variant="$card['variant']" :hint="$card['hint']" :href="$card['href']" />
             </div>
-        @endisset
-        @isset($stats['receivables'])
-            <div class="col-sm-6 col-xl-3">
-                <x-stat-card label="Outstanding receivables" :value="$stats['receivables']" icon="wallet2" :href="route('invoices.index', ['status' => 'issued'])" />
-            </div>
-        @endisset
-        @isset($stats['overdueInvoices'])
-            <div class="col-sm-6 col-xl-3">
-                <x-stat-card label="Overdue invoices" :value="number_format($stats['overdueInvoices'])" icon="exclamation-triangle"
-                    :variant="$stats['overdueInvoices'] > 0 ? 'danger' : 'secondary'" :href="route('invoices.index', ['status' => 'overdue'])" />
-            </div>
-        @endisset
-        @isset($stats['collectedThisMonth'])
-            <div class="col-sm-6 col-xl-3">
-                <x-stat-card label="Collected this month" :value="$stats['collectedThisMonth']" icon="cash-coin" variant="success" :href="route('payments.index', ['from' => today()->startOfMonth()->toDateString()])" />
-            </div>
-        @endisset
-        @isset($stats['expensesThisMonth'])
-            <div class="col-sm-6 col-xl-3">
-                <x-stat-card label="Expenses this month" :value="$stats['expensesThisMonth']" icon="wallet" variant="danger" :href="route('expenses.index', ['status' => 'recorded', 'from' => today()->startOfMonth()->toDateString()])" />
-            </div>
-        @endisset
+        @endforeach
         <div class="col-sm-6 col-xl-3">
-            <x-stat-card label="Awaiting my approval" :value="number_format($stats['myApprovals'])" icon="inbox"
-                :variant="$stats['myApprovals'] > 0 ? 'warning' : 'secondary'" :href="route('approvals.inbox')" />
-        </div>
-        @isset($stats['pendingRequisitions'])
-            <div class="col-sm-6 col-xl-3">
-                <x-stat-card label="Requisitions in approval" :value="number_format($stats['pendingRequisitions'])" icon="clipboard-check" variant="info"
-                    :href="route('requisitions.index', ['status' => 'pending'])" />
-            </div>
-        @endisset
-        @if (array_key_exists('lastPayroll', $stats))
-            <div class="col-sm-6 col-xl-3">
-                <x-stat-card label="Last payroll (net pay)" :value="$stats['lastPayroll']['total'] ?? 'None yet'" icon="cash-stack" variant="primary"
-                    :hint="$stats['lastPayroll']['hint'] ?? null" :href="$stats['lastPayroll']['url'] ?? route('payroll-runs.index')" />
-            </div>
-        @endif
-        @isset($stats['activeUsers'])
-            <div class="col-sm-6 col-xl-3">
-                <x-stat-card label="Active users" :value="number_format($stats['activeUsers'])" icon="people" :href="route('admin.users.index', ['status' => 'active'])" />
-            </div>
-        @endisset
-        <div class="col-sm-6 col-xl-3">
-            <x-stat-card label="Unread notifications" :value="number_format($stats['unreadNotifications'])" icon="bell" variant="warning"
+            <x-stat-card label="Unread notifications" :value="number_format($personal['unreadNotifications'])" icon="bell" variant="warning"
                 :href="route('notifications.index')" />
         </div>
         <div class="col-sm-6 col-xl-3">
@@ -58,15 +43,57 @@
                 :variant="$user->hasTwoFactorEnabled() ? 'success' : 'secondary'" :href="route('account.security')" />
         </div>
         <div class="col-sm-6 col-xl-3">
-            <x-stat-card label="Last sign-in" :value="$stats['lastLogin']" icon="clock-history" variant="info" />
+            <x-stat-card label="Last sign-in" :value="$personal['lastLogin']" icon="clock-history" variant="info" />
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-body text-center py-5">
-            <i class="bi bi-grid-1x2 text-primary fs-1" aria-hidden="true"></i>
-            <h2 class="h5 mt-3">Your dashboard</h2>
-            <p class="text-secondary mb-0">Summaries for inventory, payroll and reports will appear here as each module goes live.</p>
+    @if ($charts !== [])
+        <div class="row g-3 mb-4">
+            @foreach ($charts as $chart)
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-white d-flex align-items-center">
+                            <h2 class="h6 mb-0 me-auto">{{ $chart['title'] }}</h2>
+                            @if ($chart['url'])
+                                <a href="{{ $chart['url'] }}" class="small">Report</a>
+                            @endif
+                        </div>
+                        <div class="card-body">
+                            @if (array_sum(array_map(fn ($dataset) => array_sum($dataset['data']), $chart['chart']['datasets'])) > 0)
+                                <div style="position: relative; height: 260px;">
+                                    <canvas data-chart="{{ json_encode($chart['chart']) }}" role="img" aria-label="{{ $chart['title'] }}"></canvas>
+                                </div>
+                            @else
+                                <p class="text-secondary text-center small my-5">No data for this period yet.</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
-    </div>
+    @endif
+
+    @if ($recent !== [])
+        <div class="card">
+            <div class="card-header bg-white"><h2 class="h6 mb-0">Recent transactions</h2></div>
+            <ul class="list-group list-group-flush">
+                @foreach ($recent as $entry)
+                    <li class="list-group-item d-flex align-items-center gap-3">
+                        <i class="bi bi-{{ $entry['icon'] }} text-secondary" aria-hidden="true"></i>
+                        <div class="me-auto min-w-0">
+                            @if ($entry['url'])
+                                <a href="{{ $entry['url'] }}" class="text-decoration-none">{{ $entry['title'] }}</a>
+                            @else
+                                {{ $entry['title'] }}
+                            @endif
+                            <div class="small text-secondary text-truncate">{{ $entry['detail'] }} · {{ $settings->formatDate($entry['at']) }}</div>
+                        </div>
+                        @if ($entry['amount'])
+                            <span class="text-nowrap">{{ $entry['amount'] }}</span>
+                        @endif
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 </x-layouts::app>

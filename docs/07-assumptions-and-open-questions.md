@@ -83,6 +83,17 @@ Each has a **proposed default**: if you agree, no action is needed; otherwise st
 | F3 | Hosting target and domain | Recommendation in Phase 15 (VPS preferred for queues/scheduler) |
 | F4 | Existing data to import (customers, items, employees, opening stock balances)? | Import via Excel templates in Phase 13–15 if needed |
 
+## H. Reports & dashboard
+
+| # | Question | Proposed default |
+|---|----------|------------------|
+| H1 | Default reporting period | **Applied in Phase 13:** reports open on the current month up to today; any start/end date can be chosen. Balances, ageing and low stock are "as at today". The dashboard period selector offers this month, this quarter, this year or custom dates (invalid custom dates fall back to this month) |
+| H2 | How payroll appears among expenses (FR-EXP-03) | **Applied in Phase 13:** as the "Payroll" category, one line per approved or paid run, costing gross pay plus employer NSSF, dated on the last day of its pay period. Department filters use the department recorded on each payslip. The dashboard expenses card shows operating expenses only; the revenue vs expenses chart adds payroll only for users who may see payroll figures |
+| H3 | Revenue basis | **Applied in Phase 13:** revenue is cash received (completed payments, reversals excluded); invoiced sales are reported separately (invoice register, sales by customer / item). Void invoices are listed in the register but never totalled |
+| H4 | Receivables ageing | **Applied in Phase 13:** open balances as at today, by days past the due date: current (not yet due), 1–30, 31–60, 61–90, 90+ |
+| H5 | Quotation conversion rate | **Applied in Phase 13:** accepted ÷ quotations generated in the period, cancelled excluded; "generated" = numbered (submitted at least once), and superseded revisions are not counted so a revised quotation counts once |
+| H6 | Who may export | **Applied in Phase 13:** running a report needs its own permission (`reports.financial`, `.sales`, `.inventory`, `.payroll`, `.requisitions`); PDF and Excel downloads also need `reports.export` and are audited (`report_exported`, with the filters); the print view needs only the report permission. Requisition reports follow requisition visibility (department heads see their departments) |
+
 ## G. Recorded engineering assumptions (no answer needed unless you object)
 
 - PHPUnit (already installed) is used rather than Pest.

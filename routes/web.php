@@ -40,5 +40,6 @@ Route::middleware('auth')->group(function (): void {
         require __DIR__.'/modules/hr.php';
         require __DIR__.'/modules/payroll.php';
         require __DIR__.'/modules/inventory.php';
+        require __DIR__.'/modules/reports.php';
     });
 });

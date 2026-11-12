@@ -123,6 +123,11 @@
                     @endif
                 @endcanany
 
+                @canany(['reports.financial', 'reports.sales', 'reports.inventory', 'reports.payroll', 'reports.requisitions'])
+                    <div class="app-sidebar-heading">Reports</div>
+                    <x-nav-link route="reports.index" active="reports.*" icon="bar-chart-line">Reports</x-nav-link>
+                @endcanany
+
                 @canany(['users.view', 'roles.manage', 'audit.view', 'settings.organization', 'settings.finance', 'settings.system'])
                     <div class="app-sidebar-heading">Administration</div>
                     @can('users.view')
