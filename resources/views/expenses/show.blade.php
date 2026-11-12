@@ -75,6 +75,16 @@
                             @endif
                         </dd>
                         <dt class="col-sm-4 text-secondary fw-normal">Department</dt><dd class="col-sm-8">{{ $expense->department?->name ?? 'Organization-wide' }}</dd>
+                        @if ($expense->source instanceof App\Models\Requisition)
+                            <dt class="col-sm-4 text-secondary fw-normal">From requisition</dt>
+                            <dd class="col-sm-8">
+                                @can('view', $expense->source)
+                                    <a href="{{ route('requisitions.show', $expense->source) }}">{{ $expense->source->displayNumber() }}</a>
+                                @else
+                                    {{ $expense->source->displayNumber() }}
+                                @endcan
+                            </dd>
+                        @endif
                         <dt class="col-sm-4 text-secondary fw-normal">Amount before tax</dt><dd class="col-sm-8"><x-money :amount="$expense->netAmount()" /></dd>
                         <dt class="col-sm-4 text-secondary fw-normal">Tax</dt><dd class="col-sm-8"><x-money :amount="(string) $expense->tax_amount" /></dd>
                         <dt class="col-sm-4 text-secondary fw-normal">Total</dt><dd class="col-sm-8 fw-semibold fs-6"><x-money :amount="(string) $expense->amount" /></dd>

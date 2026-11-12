@@ -7,7 +7,9 @@ use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Quotation;
+use App\Models\Requisition;
 use App\Models\User;
+use App\Services\Approval\ApprovalInbox;
 use App\Services\System\SettingsService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -17,7 +19,7 @@ use Illuminate\View\View;
  */
 class DashboardController extends Controller
 {
-    public function __invoke(Request $request, SettingsService $settings): View
+    public function __invoke(Request $request, SettingsService $settings, ApprovalInbox $inbox): View
     {
         $user = $request->user()->load('roles');
 
@@ -52,6 +54,12 @@ class DashboardController extends Controller
                 ->recorded()
                 ->whereBetween('expense_date', [today()->startOfMonth()->toDateString(), today()->toDateString()])
                 ->sum('amount') ?: '0'));
+        }
+
+        $stats['myApprovals'] = $inbox->countFor($user);
+
+        if ($user->can('viewAny', Requisition::class)) {
+            $stats['pendingRequisitions'] = Requisition::query()->visibleTo($user)->pendingApproval()->count();
         }
 
         if ($user->can('users.view')) {

@@ -70,9 +70,9 @@ Each has a **proposed default**: if you agree, no action is needed; otherwise st
 
 | # | Question | Proposed default |
 |---|----------|------------------|
-| E1 | Default workflow and amount thresholds | Department Head → Finance Officer → Manager (Manager step only above a threshold you set) |
-| E2 | What happens if the requester is the department head? | Their step is skipped and routed to the next step |
-| E3 | Does fulfilment generate a purchase from a supplier (GRN/expense) or only stock issues? | Both: stock issue for stocked items; expense (and optional GRN) for purchases |
+| E1 | Default workflow and amount thresholds | **Applied in Phase 11:** seeded "Standard requisition approval": Department head → Finance (Finance Officer role) → Management (Manager role). No threshold is set, so the Manager step applies to every amount until a minimum amount is entered on it in Approval workflows. Role steps need the role plus `requisitions.approve`; Super Administrators count as members of every role. Workflow configuration needs `approvals.configure` (Super Administrator by default) |
+| E2 | What happens if the requester is the department head? | **Applied in Phase 11:** the step is skipped (reason recorded) and routing continues; the same applies when the department has no head or the only eligible approver is inactive or already acted. If every step is skipped, a final step for any `requisitions.approve` holder other than the requester is added |
+| E3 | Does fulfilment generate a purchase from a supplier (GRN/expense) or only stock issues? | **Applied in Phase 11:** catalogue stock items are always issued from stock (buy them in with a goods received note first if the store is short); non-stock and free-text lines are purchased into one draft expense per delivery, linked to the requisition, which Finance records with payment details. Approved quantity = requested quantity (approvers return the request to change quantities). Fulfilment date is today; fulfilments are not reversed in this phase |
 
 ## F. Security & operations
 

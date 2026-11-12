@@ -62,9 +62,16 @@
                     <x-nav-link route="expense-categories.index" active="expense-categories.*" icon="tags">Expense categories</x-nav-link>
                 @endcanany
 
+                <div class="app-sidebar-heading">Requests &amp; procurement</div>
+                @can('viewAny', App\Models\Requisition::class)
+                    <x-nav-link route="requisitions.index" active="requisitions.*" icon="clipboard-check">Requisitions</x-nav-link>
+                @endcan
+                <x-nav-link route="approvals.inbox" active="approvals.inbox" icon="inbox">My approvals</x-nav-link>
                 @can('suppliers.view')
-                    <div class="app-sidebar-heading">Procurement</div>
                     <x-nav-link route="suppliers.index" active="suppliers.*" icon="truck">Suppliers</x-nav-link>
+                @endcan
+                @can('viewAny', App\Models\ApprovalWorkflow::class)
+                    <x-nav-link route="approval-workflows.index" active="approval-workflows.*" icon="diagram-2">Approval workflows</x-nav-link>
                 @endcan
 
                 @canany(['items.view', 'stock.view', 'stock.receive', 'stock.adjust', 'stock.adjust_approve', 'warehouses.manage'])

@@ -4,6 +4,8 @@
     <a href="{{ route('goods-receipts.show', $reference) }}" class="text-decoration-none">{{ $reference->displayNumber() }}</a>
 @elseif ($reference instanceof App\Models\StockAdjustment)
     <a href="{{ route('stock-adjustments.show', $reference) }}" class="text-decoration-none">{{ $reference->number }}</a>
+@elseif ($reference instanceof App\Models\RequisitionFulfilment && $reference->requisition)
+    <a href="{{ route('requisitions.show', $reference->requisition) }}" class="text-decoration-none">{{ $reference->requisition->displayNumber() }}</a>
 @elseif ($reference instanceof App\Models\StockMovement)
     <span class="text-secondary">Transfer #{{ $reference->id }}</span>
 @elseif ($reference !== null)

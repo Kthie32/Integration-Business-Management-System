@@ -67,6 +67,25 @@ class User extends Authenticatable
         return $this->belongsTo(Employee::class);
     }
 
+    /**
+     * IDs of the departments whose head is this user's linked employee.
+     *
+     * @return list<int>
+     */
+    public function headedDepartmentIds(): array
+    {
+        if ($this->employee_id === null) {
+            return [];
+        }
+
+        return Department::query()->where('head_employee_id', $this->employee_id)->pluck('id')->map(fn ($id): int => (int) $id)->all();
+    }
+
+    public function isHeadOf(?Department $department): bool
+    {
+        return $department !== null && $this->employee_id !== null && (int) $department->head_employee_id === (int) $this->employee_id;
+    }
+
     public function isSuperAdministrator(): bool
     {
         return $this->hasRole(SystemRole::SuperAdministrator->value);

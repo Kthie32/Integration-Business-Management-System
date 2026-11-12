@@ -28,6 +28,16 @@
                 <x-stat-card label="Expenses this month" :value="$stats['expensesThisMonth']" icon="wallet" variant="danger" :href="route('expenses.index', ['status' => 'recorded', 'from' => today()->startOfMonth()->toDateString()])" />
             </div>
         @endisset
+        <div class="col-sm-6 col-xl-3">
+            <x-stat-card label="Awaiting my approval" :value="number_format($stats['myApprovals'])" icon="inbox"
+                :variant="$stats['myApprovals'] > 0 ? 'warning' : 'secondary'" :href="route('approvals.inbox')" />
+        </div>
+        @isset($stats['pendingRequisitions'])
+            <div class="col-sm-6 col-xl-3">
+                <x-stat-card label="Requisitions in approval" :value="number_format($stats['pendingRequisitions'])" icon="clipboard-check" variant="info"
+                    :href="route('requisitions.index', ['status' => 'pending'])" />
+            </div>
+        @endisset
         @isset($stats['activeUsers'])
             <div class="col-sm-6 col-xl-3">
                 <x-stat-card label="Active users" :value="number_format($stats['activeUsers'])" icon="people" :href="route('admin.users.index', ['status' => 'active'])" />
@@ -50,7 +60,7 @@
         <div class="card-body text-center py-5">
             <i class="bi bi-grid-1x2 text-primary fs-1" aria-hidden="true"></i>
             <h2 class="h5 mt-3">Your dashboard</h2>
-            <p class="text-secondary mb-0">Summaries for inventory, payroll and requisitions will appear here as each module goes live.</p>
+            <p class="text-secondary mb-0">Summaries for inventory, payroll and reports will appear here as each module goes live.</p>
         </div>
     </div>
 </x-layouts::app>
