@@ -55,6 +55,19 @@ class EmployeePolicy
         return $actor->can('employees.view_salary') && $this->view($actor, $employee);
     }
 
+    /**
+     * Salary structures and salary history (FR-EMP-03, FR-PRL-02).
+     */
+    public function viewSalary(User $actor, Employee $employee): bool
+    {
+        return $actor->can('employees.view_salary') && $this->view($actor, $employee);
+    }
+
+    public function manageSalary(User $actor, Employee $employee): bool
+    {
+        return $actor->can('employees.update') && $this->viewSalary($actor, $employee);
+    }
+
     public function viewDocuments(User $actor, Employee $employee): bool
     {
         return $actor->can('employees.view_documents') && $this->view($actor, $employee);

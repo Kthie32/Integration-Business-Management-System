@@ -97,6 +97,10 @@ class ApprovalService
             throw new BusinessRuleException('You cannot approve, reject or return a document you requested.');
         }
 
+        if (in_array($actor->id, $document->approvalExcludedUserIds(), true)) {
+            throw new BusinessRuleException('You prepared this document, so a different person must decide it.');
+        }
+
         if ($steps->contains(fn (Approval $step): bool => $step->decided_by === $actor->id)) {
             throw new BusinessRuleException('You have already acted on another step of this request; a different person must decide this step.');
         }
@@ -155,7 +159,7 @@ class ApprovalService
      */
     public function canAct(User $user, Approvable $document): bool
     {
-        if (! $user->is_active || $user->id === $document->approvalRequesterId()) {
+        if (! $user->is_active || in_array($user->id, $document->approvalExcludedUserIds(), true)) {
             return false;
         }
 
@@ -219,7 +223,7 @@ class ApprovalService
             ->where('round', $step->round)
             ->whereNotNull('decided_by')
             ->pluck('decided_by')
-            ->push($document->approvalRequesterId())
+            ->merge($document->approvalExcludedUserIds())
             ->filter()
             ->all();
 
@@ -320,10 +324,10 @@ class ApprovalService
                 User::query()->where('employee_id', $document->approvalDepartment()->head_employee_id)->whereKey($requesterId)->exists() => 'Skipped: the requester is the department head.',
                 default => 'Skipped: the department head has no active user account or already acted on this request.',
             },
-            ApproverType::User => $step->user_id === $requesterId
+            ApproverType::User => in_array($step->user_id, $document->approvalExcludedUserIds(), true)
                 ? 'Skipped: the named approver is the requester.'
                 : 'Skipped: the named approver is inactive or already acted on this request.',
-            ApproverType::Role => 'Skipped: nobody else with the '.($step->role?->name ?? 'deleted').' role can approve this request.',
+            ApproverType::Role => 'Skipped: nobody else with the '.($step->role?->name ?? 'deleted').' role can approve this.',
             ApproverType::AnyApprover => 'Skipped.',
         };
     }

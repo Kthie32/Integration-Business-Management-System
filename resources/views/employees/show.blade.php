@@ -81,6 +81,10 @@
             </div>
         @endif
 
+        @if ($salaryStructures !== null)
+            @include('employees._salary')
+        @endif
+
         @can('changeStatus', $employee)
             <div class="col-lg-6">
                 <div class="card h-100">

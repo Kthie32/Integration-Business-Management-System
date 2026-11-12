@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\HR\StoreEmployeeRequest;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\PayComponent;
 use App\Models\User;
 use App\Services\HR\EmployeeService;
 use Illuminate\Http\RedirectResponse;
@@ -91,6 +92,12 @@ class EmployeeController extends Controller
             'showSensitive' => $actor->can('viewSensitive', $employee),
             'documents' => $actor->can('viewDocuments', $employee) ? $employee->documents()->with('uploader')->get() : null,
             'nextStatuses' => collect(EmployeeStatus::cases())->filter(fn (EmployeeStatus $status): bool => $employee->status->canTransitionTo($status))->values(),
+            'salaryStructures' => $actor->can('viewSalary', $employee)
+                ? $employee->salaryStructures()->with('components.payComponent', 'creator')->get()
+                : null,
+            'payComponents' => $actor->can('manageSalary', $employee)
+                ? PayComponent::query()->active()->orderBy('kind')->orderBy('name')->get()
+                : collect(),
         ]);
     }
 

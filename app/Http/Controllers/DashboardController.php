@@ -6,6 +6,7 @@ use App\Enums\QuotationStatus;
 use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\PayrollRun;
 use App\Models\Quotation;
 use App\Models\Requisition;
 use App\Models\User;
@@ -60,6 +61,15 @@ class DashboardController extends Controller
 
         if ($user->can('viewAny', Requisition::class)) {
             $stats['pendingRequisitions'] = Requisition::query()->visibleTo($user)->pendingApproval()->count();
+        }
+
+        if ($user->can('payroll.view') && $user->can('dashboard.view_payroll')) {
+            $lastPayroll = PayrollRun::query()->released()->orderByDesc('period_year')->orderByDesc('period_month')->first();
+            $stats['lastPayroll'] = $lastPayroll === null ? null : [
+                'total' => $settings->formatMoney((string) $lastPayroll->total_net),
+                'hint' => $lastPayroll->periodLabel().' · '.$lastPayroll->status->label(),
+                'url' => route('payroll-runs.show', $lastPayroll),
+            ];
         }
 
         if ($user->can('users.view')) {

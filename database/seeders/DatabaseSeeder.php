@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             InventorySeeder::class,
             ExpenseCategorySeeder::class,
             ApprovalWorkflowSeeder::class,
+            PayrollSeeder::class,
             SuperAdminSeeder::class,
         ]);
     }

@@ -93,6 +93,24 @@ class Employee extends Model
     }
 
     /**
+     * Salary history, newest first (FR-PRL-02).
+     *
+     * @return HasMany<SalaryStructure, $this>
+     */
+    public function salaryStructures(): HasMany
+    {
+        return $this->hasMany(SalaryStructure::class)->latest('effective_from')->latest('id');
+    }
+
+    /**
+     * @return HasMany<PayrollItem, $this>
+     */
+    public function payrollItems(): HasMany
+    {
+        return $this->hasMany(PayrollItem::class);
+    }
+
+    /**
      * @return HasMany<Department, $this>
      */
     public function headedDepartments(): HasMany

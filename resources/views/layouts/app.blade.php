@@ -106,6 +106,23 @@
                     <x-nav-link route="departments.index" active="departments.*" icon="diagram-3">Departments</x-nav-link>
                 @endcanany
 
+                @canany(['payroll.view', 'payroll.prepare', 'payroll.configure'])
+                    <div class="app-sidebar-heading">Payroll</div>
+                    @can('viewAny', App\Models\PayrollRun::class)
+                        <x-nav-link route="payroll-runs.index" active="payroll-runs.*" icon="cash-stack">Payroll runs</x-nav-link>
+                    @endcan
+                    <x-nav-link route="pay-components.index" active="pay-components.*" icon="list-ul">Pay components</x-nav-link>
+                    <x-nav-link route="statutory-rates.index" active="statutory-rates.*" icon="bank">Statutory rates</x-nav-link>
+                    @if (auth()->user()->employee_id !== null && auth()->user()->can('payslips.view_own'))
+                        <x-nav-link route="payslips.mine" active="payslips.mine" icon="file-earmark-text">My payslips</x-nav-link>
+                    @endif
+                @elsecan('payslips.view_own')
+                    @if (auth()->user()->employee_id !== null)
+                        <div class="app-sidebar-heading">Payroll</div>
+                        <x-nav-link route="payslips.mine" active="payslips.*" icon="file-earmark-text">My payslips</x-nav-link>
+                    @endif
+                @endcanany
+
                 @canany(['users.view', 'roles.manage', 'audit.view', 'settings.organization', 'settings.finance', 'settings.system'])
                     <div class="app-sidebar-heading">Administration</div>
                     @can('users.view')

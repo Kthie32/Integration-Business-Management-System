@@ -5,8 +5,8 @@ namespace App\Services\Approval;
 use App\Enums\QuotationStatus;
 use App\Enums\StockAdjustmentStatus;
 use App\Models\Approval;
+use App\Models\PayrollRun;
 use App\Models\Quotation;
-use App\Models\Requisition;
 use App\Models\StockAdjustment;
 use App\Models\User;
 use Carbon\CarbonInterface;
@@ -14,7 +14,7 @@ use Illuminate\Support\Collection;
 
 /**
  * "My approvals" (FR-APR-02): everything waiting for the user's decision — current approval-engine steps
- * (requisitions) plus quotations and stock adjustments, which keep their own single-step approval rules.
+ * (requisitions and payroll runs) plus quotations and stock adjustments, which keep their own single-step approval rules.
  */
 class ApprovalInbox
 {
@@ -26,19 +26,30 @@ class ApprovalInbox
     public function itemsFor(User $user): Collection
     {
         $items = $this->approvals->pendingFor($user)->map(function (Approval $step): array {
-            /** @var Requisition $document */
             $document = $step->approvable;
 
-            return [
-                'type' => 'Requisition',
-                'number' => $document->displayNumber(),
-                'title' => $document->purpose,
-                'step' => $step->name,
-                'amount' => (string) $document->estimated_total,
-                'requester' => $document->requester?->name,
-                'since' => $step->created_at,
-                'url' => $document->approvalUrl(),
-            ];
+            return match (true) {
+                $document instanceof PayrollRun => [
+                    'type' => 'Payroll run',
+                    'number' => $document->displayNumber(),
+                    'title' => $document->periodLabel().' · '.$document->employee_count.' '.str('employee')->plural($document->employee_count),
+                    'step' => $step->name,
+                    'amount' => (string) $document->total_gross,
+                    'requester' => $document->submitter?->name,
+                    'since' => $step->created_at,
+                    'url' => $document->approvalUrl(),
+                ],
+                default => [
+                    'type' => 'Requisition',
+                    'number' => $document->displayNumber(),
+                    'title' => $document->purpose,
+                    'step' => $step->name,
+                    'amount' => (string) $document->estimated_total,
+                    'requester' => $document->requester?->name,
+                    'since' => $step->created_at,
+                    'url' => $document->approvalUrl(),
+                ],
+            };
         });
 
         if ($user->can('quotations.approve')) {

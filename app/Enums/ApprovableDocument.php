@@ -3,17 +3,18 @@
 namespace App\Enums;
 
 /**
- * Document types that run through the approval engine and can have configured workflows. Payroll runs join
- * in Phase 12.
+ * Document types that run through the approval engine and can have configured workflows.
  */
 enum ApprovableDocument: string
 {
     case Requisition = 'requisition';
+    case PayrollRun = 'payroll_run';
 
     public function label(): string
     {
         return match ($this) {
             self::Requisition => 'Requisition',
+            self::PayrollRun => 'Payroll run',
         };
     }
 
@@ -24,6 +25,7 @@ enum ApprovableDocument: string
     {
         return match ($this) {
             self::Requisition => 'requisitions.approve',
+            self::PayrollRun => 'payroll.approve',
         };
     }
 

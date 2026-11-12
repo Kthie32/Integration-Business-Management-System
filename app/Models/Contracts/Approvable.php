@@ -27,6 +27,13 @@ interface Approvable
     public function approvalRequesterId(): ?int;
 
     /**
+     * Everyone who may never decide the document: the requester plus, for example, whoever prepared it.
+     *
+     * @return list<int>
+     */
+    public function approvalExcludedUserIds(): array;
+
+    /**
      * The department whose head resolves "department head" steps.
      */
     public function approvalDepartment(): ?Department;

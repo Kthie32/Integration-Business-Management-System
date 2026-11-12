@@ -21,6 +21,16 @@ trait HasApprovals
         return $this->morphMany(Approval::class, 'approvable')->orderBy('round')->orderBy('sequence');
     }
 
+    /**
+     * The requester never decides their own document. Documents with more people involved override this.
+     *
+     * @return list<int>
+     */
+    public function approvalExcludedUserIds(): array
+    {
+        return array_values(array_filter([$this->approvalRequesterId()]));
+    }
+
     public function currentApprovalRound(): int
     {
         return (int) ($this->approvals->max('round') ?? 0);

@@ -38,6 +38,12 @@
                     :href="route('requisitions.index', ['status' => 'pending'])" />
             </div>
         @endisset
+        @if (array_key_exists('lastPayroll', $stats))
+            <div class="col-sm-6 col-xl-3">
+                <x-stat-card label="Last payroll (net pay)" :value="$stats['lastPayroll']['total'] ?? 'None yet'" icon="cash-stack" variant="primary"
+                    :hint="$stats['lastPayroll']['hint'] ?? null" :href="$stats['lastPayroll']['url'] ?? route('payroll-runs.index')" />
+            </div>
+        @endif
         @isset($stats['activeUsers'])
             <div class="col-sm-6 col-xl-3">
                 <x-stat-card label="Active users" :value="number_format($stats['activeUsers'])" icon="people" :href="route('admin.users.index', ['status' => 'active'])" />

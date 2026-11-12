@@ -57,13 +57,13 @@ Each has a **proposed default**: if you agree, no action is needed; otherwise st
 
 | # | Question | Proposed default |
 |---|----------|------------------|
-| D1 | Pay frequency | Monthly only |
-| D2 | Statutory rules to seed — **must be verified against current URA and NSSF publications before go-live**. Developer's current understanding (unverified): PAYE resident monthly bands 0–235,000 @ 0 %; 235,001–335,000 @ 10 %; 335,001–410,000 @ 20 % (+10,000); above 410,000 @ 30 % (+25,000), plus an extra 10 % on income above 10,000,000. NSSF 5 % employee + 10 % employer on gross. LST per local-government schedule, annual max UGX 100,000, deducted in instalments. | Seed these marked "unverified"; HR/Finance confirms before first live run |
-| D3 | Non-resident employees, or other statutory items (e.g. withholding on contractors)? | Residents only at first |
-| D4 | Common other deductions: salary advances, loans, SACCO, union dues? Should loans have repayment schedules? | Generic deductions only; loan schedules later |
-| D5 | Who approves payroll? | Manager or Finance Officer; preparer cannot approve |
-| D6 | Payroll corrections after approval | Adjustment run / next month adjustment; no editing |
-| D7 | Bank or mobile money payment files in a specific bank format? | Generic Excel payment list |
+| D1 | Pay frequency | **Applied in Phase 12:** monthly regular runs only, one per month (current or next month at the latest) |
+| D2 | Statutory rules to seed — **must be verified against current URA and NSSF publications before go-live**. Developer's current understanding (unverified): PAYE resident monthly bands 0–235,000 @ 0 %; 235,001–335,000 @ 10 %; 335,001–410,000 @ 20 % (+10,000); above 410,000 @ 30 % (+25,000), plus an extra 10 % on income above 10,000,000. NSSF 5 % employee + 10 % employer on gross. LST per local-government schedule, annual max UGX 100,000, deducted in instalments. | **Applied in Phase 12:** seeded from 1 Jul 2024 exactly as stated, marked unverified; LST schedule seeded as 0 up to 100,000, then 5,000 / 10,000 / 20,000 / 30,000 / 40,000 / 60,000 / 70,000 / 80,000 / 90,000 per 100,000 band of monthly gross pay and 100,000 above 1,000,000 a year, in four equal instalments July–October. NSSF on basic + NSSF-applicable allowances. NSSF and LST are not deducted before PAYE. Unverified rates are flagged on every open run and on Statutory rates, where `payroll.configure` holders correct them, add new effective-dated versions and mark them verified with a source |
+| D3 | Non-resident employees, or other statutory items (e.g. withholding on contractors)? | **Applied in Phase 12:** residents by default; a non-resident PAYE rule set (unverified: 10 % from the first shilling, 20 % above 335,000, 30 % above 410,000, plus 10 % above 10,000,000) is seeded and used for employees not marked resident for tax. No contractor withholding |
+| D4 | Common other deductions: salary advances, loans, SACCO, union dues? Should loans have repayment schedules? | **Applied in Phase 12:** generic components (seeded: housing, transport, lunch allowances; salary advance recovery, loan repayment, SACCO deductions); no loan schedules |
+| D5 | Who approves payroll? | **Applied in Phase 12:** no payroll workflow is seeded, so a run goes to any `payroll.approve` holder (Manager, Finance Officer); a workflow for "Payroll runs" can be configured. Whoever created, calculated or submitted the run cannot approve it, Super Administrators included |
+| D6 | Payroll corrections after approval | **Applied in Phase 12:** approved and paid runs are locked; corrections are one-off adjustments (allowance or deduction, taxable / NSSF flags) in the next open run. Approved months' salaries cannot be changed retroactively. Pay is not pro-rated for part months (use an adjustment) |
+| D7 | Bank or mobile money payment files in a specific bank format? | **Applied in Phase 12:** generic payment list (bank / mobile money / cash per employee) as Excel, PDF and print |
 | D8 | Leave and attendance management? | Out of scope (not in brief) |
 
 ## E. Requisitions & approvals
