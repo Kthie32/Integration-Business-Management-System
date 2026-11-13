@@ -17,8 +17,8 @@ class AuthorizationSeedersTest extends TestCase
 
     public function test_seeding_twice_creates_every_permission_and_system_role_once(): void
     {
-        $this->seedRolesAndPermissions();
-        $this->seedRolesAndPermissions();
+        $this->runAuthorizationSeeders();
+        $this->runAuthorizationSeeders();
 
         $this->assertSame(count(PermissionCatalog::all()), Permission::count());
         $this->assertSame(count(SystemRole::cases()), Role::query()->where('is_system', true)->count());
@@ -27,17 +27,17 @@ class AuthorizationSeedersTest extends TestCase
 
     public function test_reseeding_keeps_permissions_the_organization_changed(): void
     {
-        $this->seedRolesAndPermissions();
+        $this->runAuthorizationSeeders();
         Role::findByName(SystemRole::Accountant->value)->syncPermissions(['invoices.view']);
 
-        $this->seedRolesAndPermissions();
+        $this->runAuthorizationSeeders();
 
         $this->assertSame(['invoices.view'], Role::findByName(SystemRole::Accountant->value)->permissions->pluck('name')->all());
     }
 
     public function test_super_admin_seeder_creates_the_first_super_administrator_once(): void
     {
-        $this->seedRolesAndPermissions();
+        $this->runAuthorizationSeeders();
         config()->set('ibms.super_admin', ['name' => 'Owner', 'email' => 'Owner@Example.com', 'password' => 'Secret123']);
 
         $this->seed(SuperAdminSeeder::class);
@@ -51,7 +51,7 @@ class AuthorizationSeedersTest extends TestCase
 
     public function test_super_admin_seeder_does_nothing_without_an_email(): void
     {
-        $this->seedRolesAndPermissions();
+        $this->runAuthorizationSeeders();
         config()->set('ibms.super_admin.email', null);
 
         $this->seed(SuperAdminSeeder::class);

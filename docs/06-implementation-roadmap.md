@@ -41,6 +41,12 @@ A module is not marked complete because its screens render.
 - Permission matrix: each role × key route → allowed/forbidden.
 - PDF endpoints return valid PDFs; exports return valid XLSX.
 
+### Running the test suite quickly
+
+- `composer test-fast` runs the whole suite in one process (MySQL test database `ibms_testing`, CLI opcache on).
+- Tests load the database structure from `database/schema/mysql-schema.sql` instead of replaying every migration, then run only migrations newer than the dump. **Whenever a phase adds migrations, regenerate the dump** against the migrated test database: `DB_DATABASE=ibms_testing php artisan schema:dump` (needs `mysqldump` on the PATH). The migration files stay in place: an existing database keeps migrating as before, and a brand-new one loads the dump first and then the newer migrations, which gives the same schema.
+- The permission catalogue and system roles are seeded once per test process (`Tests\Concerns\TestDatabaseSeeder`, run by RefreshDatabase after `migrate:fresh`), and every test's changes are rolled back. `seedRolesAndPermissions()` therefore only clears the permission cache; the seeder tests call `runAuthorizationSeeders()` to exercise the real seeders.
+
 ## 3. Progress report
 
 Status key: ✅ done & verified · 🟡 in progress · ⚠️ built, not yet verified · ⬜ pending
