@@ -78,7 +78,7 @@ Each has a **proposed default**: if you agree, no action is needed; otherwise st
 
 | # | Question | Proposed default |
 |---|----------|------------------|
-| F1 | Two-factor authentication | Optional per user; mandatory for Super/System Admin |
+| F1 | Two-factor authentication | ~~Optional per user; mandatory for Super/System Admin~~ **Removed 2026-11-14 at the owner's request:** users sign in with email and password only (see docs/08) |
 | F2 | Session idle timeout | 120 minutes |
 | F3 | Hosting target and domain | Recommendation in Phase 15 (VPS preferred for queues/scheduler) |
 | F4 | Existing data to import (customers, items, employees, opening stock balances)? | Import via Excel templates in Phase 13–15 if needed |

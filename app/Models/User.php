@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'email', 'phone', 'password'])]
@@ -20,7 +19,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use Auditable, HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
+    use Auditable, HasFactory, HasRoles, Notifiable;
 
     /**
      * Get the attributes that should be cast.
@@ -89,19 +88,6 @@ class User extends Authenticatable
     public function isSuperAdministrator(): bool
     {
         return $this->hasRole(SystemRole::SuperAdministrator->value);
-    }
-
-    /**
-     * Whether the user's roles oblige them to use two-factor authentication.
-     */
-    public function requiresTwoFactor(): bool
-    {
-        return $this->hasAnyRole(config('ibms.two_factor_required_roles', []));
-    }
-
-    public function hasTwoFactorEnabled(): bool
-    {
-        return $this->two_factor_confirmed_at !== null;
     }
 
     public function initials(): string

@@ -21,7 +21,7 @@ class SecurityHardeningTest extends TestCase
 
     public function test_password_confirmation_is_limited_to_five_attempts_a_minute(): void
     {
-        $user = User::factory()->withTwoFactor()->create();
+        $user = User::factory()->create();
 
         for ($attempt = 1; $attempt <= 5; $attempt++) {
             $this->actingAs($user)->post(route('password.confirm.store'), ['password' => "wrong-{$attempt}"])->assertSessionHasErrors('password');
@@ -34,7 +34,7 @@ class SecurityHardeningTest extends TestCase
 
     public function test_changing_the_password_is_limited_to_five_attempts_a_minute(): void
     {
-        $user = User::factory()->withTwoFactor()->create();
+        $user = User::factory()->create();
         $originalHash = $user->password;
         $payload = ['current_password' => 'not-the-password', 'password' => 'N3w-Passw0rd!x', 'password_confirmation' => 'N3w-Passw0rd!x'];
 

@@ -9,17 +9,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Rate-limits the Fortify actions that check a secret but are not covered by the login limiters:
- * confirming the password, changing it, confirming a new two-factor code and requesting reset links.
+ * confirming the password, changing it and requesting reset links.
  *
- * Without a limit, someone holding a signed-in session could guess the account password (and then switch
- * two-factor off), and the reset form could be used to flood mailboxes.
+ * Without a limit, someone holding a signed-in session could guess the account password, and the reset form could be used to flood mailboxes.
  */
 class ThrottleAccountSecurityChecks
 {
     /**
      * Route names checked, all sharing the "account-security" limiter.
      */
-    public const ROUTES = ['password.confirm.store', 'user-password.update', 'two-factor.confirm', 'password.email'];
+    public const ROUTES = ['password.confirm.store', 'user-password.update', 'password.email'];
 
     public function __construct(private ThrottleRequests $throttle) {}
 

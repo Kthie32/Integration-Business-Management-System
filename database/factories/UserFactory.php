@@ -57,18 +57,6 @@ class UserFactory extends Factory
     }
 
     /**
-     * An account with two-factor authentication confirmed.
-     */
-    public function withTwoFactor(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'two_factor_secret' => encrypt('JBSWY3DPEHPK3PXP'),
-            'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1', 'recovery-code-2'])),
-            'two_factor_confirmed_at' => now(),
-        ]);
-    }
-
-    /**
      * Assign a system role after creation. Requires the PermissionSeeder and RoleSeeder to have run.
      */
     public function withRole(SystemRole $role): static

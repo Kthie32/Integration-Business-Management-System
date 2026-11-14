@@ -55,8 +55,6 @@
                                 —
                             @endforelse
                         </dd>
-                        <dt class="col-5 text-secondary fw-normal">Two-factor</dt>
-                        <dd class="col-7">{{ $user->hasTwoFactorEnabled() ? 'On' : 'Off' }}</dd>
                         <dt class="col-5 text-secondary fw-normal">Last sign-in</dt>
                         <dd class="col-7">{{ $user->last_login_at?->format('d M Y H:i') ?? 'Never' }}@if ($user->last_login_ip) <span class="text-secondary">from {{ $user->last_login_ip }}</span>@endif</dd>
                         <dt class="col-5 text-secondary fw-normal">Created</dt>

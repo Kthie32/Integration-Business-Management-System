@@ -18,20 +18,4 @@ return [
         'email' => env('IBMS_SUPER_ADMIN_EMAIL'),
         'password' => env('IBMS_SUPER_ADMIN_PASSWORD'),
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Mandatory Two-Factor Authentication
-    |--------------------------------------------------------------------------
-    |
-    | Users holding any of these roles must confirm two-factor authentication before they can
-    | use the application. Everyone else may enable it optionally from their Security page.
-    |
-    */
-
-    'two_factor_required_roles' => [
-        'Super Administrator',
-        'System Administrator',
-    ],
-
 ];

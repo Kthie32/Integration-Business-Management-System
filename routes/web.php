@@ -6,14 +6,14 @@ use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
- * Authentication routes (login, password reset, two-factor, profile/password updates) are registered by Fortify.
+ * Authentication routes (login, password reset, profile/password updates) are registered by Fortify.
  */
 
 Route::redirect('/', '/dashboard');
 
 Route::middleware('auth')->group(function (): void {
     /*
-     * The signed-in user's own account. Kept outside the two-factor requirement so users can set it up here.
+     * The signed-in user's own account.
      */
     Route::prefix('account')->name('account.')->controller(AccountController::class)->group(function (): void {
         Route::get('profile', 'profile')->name('profile');
@@ -22,24 +22,22 @@ Route::middleware('auth')->group(function (): void {
         Route::delete('sessions/{session}', 'endSession')->name('sessions.destroy');
     });
 
-    Route::middleware('two-factor.enforced')->group(function (): void {
-        Route::get('dashboard', DashboardController::class)->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 
-        Route::controller(NotificationController::class)->prefix('notifications')->name('notifications.')->group(function (): void {
-            Route::get('/', 'index')->name('index');
-            Route::post('read-all', 'markAllAsRead')->name('read-all');
-            Route::post('{notification}/open', 'open')->name('open');
-        });
-
-        require __DIR__.'/modules/admin.php';
-        require __DIR__.'/modules/settings.php';
-        require __DIR__.'/modules/sales.php';
-        require __DIR__.'/modules/finance.php';
-        require __DIR__.'/modules/procurement.php';
-        require __DIR__.'/modules/approvals.php';
-        require __DIR__.'/modules/hr.php';
-        require __DIR__.'/modules/payroll.php';
-        require __DIR__.'/modules/inventory.php';
-        require __DIR__.'/modules/reports.php';
+    Route::controller(NotificationController::class)->prefix('notifications')->name('notifications.')->group(function (): void {
+        Route::get('/', 'index')->name('index');
+        Route::post('read-all', 'markAllAsRead')->name('read-all');
+        Route::post('{notification}/open', 'open')->name('open');
     });
+
+    require __DIR__.'/modules/admin.php';
+    require __DIR__.'/modules/settings.php';
+    require __DIR__.'/modules/sales.php';
+    require __DIR__.'/modules/finance.php';
+    require __DIR__.'/modules/procurement.php';
+    require __DIR__.'/modules/approvals.php';
+    require __DIR__.'/modules/hr.php';
+    require __DIR__.'/modules/payroll.php';
+    require __DIR__.'/modules/inventory.php';
+    require __DIR__.'/modules/reports.php';
 });

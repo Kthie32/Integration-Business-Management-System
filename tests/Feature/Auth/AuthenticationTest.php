@@ -37,6 +37,18 @@ class AuthenticationTest extends TestCase
         $this->assertDatabaseHas('audit_logs', ['event' => 'login', 'user_id' => $user->id]);
     }
 
+    public function test_super_administrator_goes_straight_to_the_dashboard_with_correct_credentials(): void
+    {
+        $user = User::factory()->withRole(SystemRole::SuperAdministrator)->create(['email' => 'owner@example.com']);
+
+        $this->post(route('login.store'), ['email' => 'owner@example.com', 'password' => 'password'])
+            ->assertRedirect('/dashboard')
+            ->assertSessionMissing('login.id');
+
+        $this->assertAuthenticatedAs($user);
+        $this->get(route('dashboard'))->assertOk();
+    }
+
     public function test_wrong_password_is_rejected_and_recorded(): void
     {
         User::factory()->create(['email' => 'jane@example.com']);

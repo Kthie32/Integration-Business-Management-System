@@ -46,10 +46,10 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Create an active user holding the given system role, with two-factor confirmed so mandatory 2FA never interferes.
+     * Create an active user holding the given system role.
      */
     protected function userWithRole(SystemRole $role): User
     {
-        return User::factory()->withTwoFactor()->withRole($role)->create();
+        return User::factory()->withRole($role)->create();
     }
 }

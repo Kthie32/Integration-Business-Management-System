@@ -16,15 +16,15 @@ behaviour or a deployment requirement for whoever deploys the system.
 | IDOR / nested records | **Pass.** Nested routes are scoped to their parent (documents, adjustments) or checked in the controller (salary structures) |
 | Mass assignment | **Pass.** Every model has an explicit `#[Fillable]` list or `$guarded = ['*']`; only validated data reaches them |
 | SQL injection | **Pass.** All raw expressions use bound parameters or fixed column names; sort columns are whitelisted |
-| XSS | **Pass.** Unescaped output is limited to sort links and addresses that are escaped with `e()` first, and the 2FA QR code SVG |
+| XSS | **Pass.** Unescaped output is limited to sort links and addresses that are escaped with `e()` first |
 | CSRF | **Pass.** Laravel's request-forgery middleware covers every web route, with no exceptions |
 | File uploads | **Pass.** Extension and MIME checked, size-limited, stored under random names on the private disk, downloaded only through authorised controllers |
-| Login / 2FA brute force | **Pass.** 5 attempts a minute on login and the 2FA challenge |
-| Other secret checks | **Fixed** (F-2): password confirmation, password change, 2FA setup confirmation, reset-link requests |
-| Session and 2FA enforcement | **Pass.** Deactivated users are signed out on their next request; mandatory 2FA blocks every module page |
+| Login brute force | **Pass.** 5 attempts a minute on login |
+| Other secret checks | **Fixed** (F-2): password confirmation, password change, reset-link requests |
+| Session handling | **Pass.** Deactivated users are signed out on their next request. Two-factor authentication was removed on 2026-11-14 (see §6) |
 | Security headers | **Improved** (F-3): Content-Security-Policy added to the existing headers |
 | Private file exposure | **Fixed** (F-4): unused `/storage/{path}` file-serving route removed |
-| Sensitive data in logs | **Pass.** Passwords, tokens, 2FA secrets, salaries and employee identity/bank numbers are excluded or masked in the audit log |
+| Sensitive data in logs | **Pass.** Passwords, tokens, salaries and employee identity/bank numbers are excluded or masked in the audit log |
 
 ## 2. Findings and fixes
 
@@ -45,6 +45,7 @@ limit and then switch two-factor off. The reset form could be used to flood mail
 **Fix:** a new `ThrottleAccountSecurityChecks` middleware applies the `account-security` limiter (5 a minute, per
 user, or per IP address when signed out) to those four actions. **Tests:** `SecurityHardeningTest` (each limit, and
 that the sixth attempt is refused even with the right password).
+*Update 2026-11-14:* with two-factor removed (§6), the limit now covers the three remaining actions.
 
 ### F-3 No Content-Security-Policy (fixed)
 
@@ -96,3 +97,20 @@ These are configuration settings for the live server, not code changes:
 | `Integration/*` | End-to-end business flows across modules (see docs/06, Phase 14) |
 
 The performance part of Phase 14 is reported in docs/09.
+
+## 6. Change after the review: two-factor authentication removed (2026-11-14)
+
+At the owner's request, two-factor authentication was removed from the system (docs/07 decision F1). Signing in with
+the correct email and password now goes straight to the dashboard for every user and role. The Security page shows
+only signed-in devices, and nobody is asked to set up an authenticator app.
+
+**Impact:** this lowers the protection of the Super Administrator and System Administrator accounts. A leaked or guessed
+password is now enough to take over an account that can change roles, settings and payroll. What remains:
+
+- login is limited to 5 attempts a minute per email and address, and failed sign-ins are recorded in the audit log
+- deactivated users are refused and signed out on their next request
+- users can sign out other devices from their Security page
+
+**Recommendations:** use long, unique passwords for the administrator accounts, review failed sign-ins in the audit
+log, and turn two-factor back on (it is a Fortify feature, so it can be restored) before the system faces the internet.
+The `two_factor_*` columns on the users table were kept, so restoring it needs no data migration.

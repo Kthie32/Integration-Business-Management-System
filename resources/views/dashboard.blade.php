@@ -39,10 +39,6 @@
                 :href="route('notifications.index')" />
         </div>
         <div class="col-sm-6 col-xl-3">
-            <x-stat-card label="Two-factor sign-in" :value="$user->hasTwoFactorEnabled() ? 'On' : 'Off'" icon="shield-check"
-                :variant="$user->hasTwoFactorEnabled() ? 'success' : 'secondary'" :href="route('account.security')" />
-        </div>
-        <div class="col-sm-6 col-xl-3">
             <x-stat-card label="Last sign-in" :value="$personal['lastLogin']" icon="clock-history" variant="info" />
         </div>
     </div>

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * The signed-in user's own profile and security pages. Profile, password and two-factor changes are
+ * The signed-in user's own profile and security pages. Profile and password changes are
  * submitted to Fortify's endpoints; this controller only renders the pages and manages own sessions.
  */
 class AccountController extends Controller

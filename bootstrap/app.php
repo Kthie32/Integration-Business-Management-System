@@ -1,7 +1,6 @@
 <?php
 
 use App\Exceptions\BusinessRuleException;
-use App\Http\Middleware\EnsureTwoFactorIsEnabled;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
@@ -24,7 +23,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'two-factor.enforced' => EnsureTwoFactorIsEnabled::class,
             'permission' => PermissionMiddleware::class,
             'role' => RoleMiddleware::class,
         ]);

@@ -38,7 +38,7 @@ class RouteAuthorizationSweepTest extends TestCase
     {
         $this->seedRolesAndPermissions();
         $parameters = $this->sampleRouteParameters();
-        $user = User::factory()->withTwoFactor()->create();
+        $user = User::factory()->create();
         $unexpected = [];
         $checked = 0;
 

@@ -1,6 +1,6 @@
 # 06 — Implementation Roadmap & Progress Report
 
-Last updated: 2026-11-13
+Last updated: 2026-11-14
 
 ## 1. Phases
 
@@ -136,3 +136,4 @@ Status key: ✅ done & verified · 🟡 in progress · ⚠️ built, not yet ver
 | 14 | Performance check | ✅ | docs/09. New `ibms:demo:volume` command (refuses production) generates a year of activity through the services: 2,000 invoices, 1,389 payments and receipts, 5,111 stock movements, 600 expenses, 500 quotations, 300 requisitions, 11 payroll runs × 60 employees, 17,668 audit entries. No N+1 queries or lazy loads on any page (lists 4–11 queries, dashboard 32–40). Added indexes on `invoices.invoice_date`, `invoices.issued_at` and `quotations.quote_date` (lists and reports no longer scan and sort the whole table); schema dump regenerated. Large one-year reports are PHP-bound (about 1 ms per row on the Celeron development machine) |
 | 14 | Tests | ✅ | 36 new tests: 5 end-to-end scenarios (quote to cash and the shortage case, requisition to fulfilment and rejection, hire to payslip); 25 security tests (route sweep, role × page matrix, record-level rules, rate limits, security headers, removed private-file route); 3 index checks and 2 volume-command tests; 1 regression test for the pay-component pages. Full suite 585/585 passing, run alone in 22 batches in about 41 minutes |
 | 15 | Deployment & documentation | ➖ | Not in scope: the project stops at Phase 14 (decided 2026-11-14). Deployment requirements are in docs/08 §4 |
+| Change | Two-factor authentication removed | ✅ | At the owner's request (2026-11-14, docs/07 F1): correct email and password go straight to the dashboard for every role. Removed the Fortify 2FA feature, challenge page, mandatory-2FA middleware and role setting, the 2FA card on the dashboard and user page, and the 2FA part of the Security page (signed-in devices remain). Database columns kept so it can be restored. Impact noted in docs/08 §6. Tests: 2FA-only tests removed, one added (Super Administrator with correct credentials lands on the dashboard); 186 tests in the affected folders (Auth, Account, Security, Admin, Reports, Integration, Unit, top-level) pass |

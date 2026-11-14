@@ -136,14 +136,16 @@ trait CreatesSampleRecords
     }
 
     /**
-     * Every application route behind the two-factor requirement (the signed-in part of the system).
+     * Every signed-in application route, apart from Fortify's own and the user's account pages.
      *
      * @return list<Route>
      */
     protected function protectedRoutes(): array
     {
         return collect(app('router')->getRoutes()->getRoutes())
-            ->filter(fn (Route $route): bool => in_array('two-factor.enforced', $route->gatherMiddleware(), true))
+            ->filter(fn (Route $route): bool => in_array('auth', $route->gatherMiddleware(), true)
+                && ! str_starts_with((string) $route->getActionName(), 'Laravel\Fortify')
+                && ! str_starts_with((string) $route->getName(), 'account.'))
             ->values()
             ->all();
     }
