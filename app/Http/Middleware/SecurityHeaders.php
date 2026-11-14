@@ -12,6 +12,12 @@ use Symfony\Component\HttpFoundation\Response;
 class SecurityHeaders
 {
     /**
+     * Directives that hold without restricting the page's own scripts and styles: no framing by other sites,
+     * no plugins, no <base> rewriting and forms that only submit to this application.
+     */
+    public const CONTENT_SECURITY_POLICY = "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'";
+
+    /**
      * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
@@ -22,6 +28,7 @@ class SecurityHeaders
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+        $response->headers->set('Content-Security-Policy', self::CONTENT_SECURITY_POLICY);
 
         if ($request->isSecure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');

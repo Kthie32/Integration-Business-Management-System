@@ -26,7 +26,7 @@ class PayComponentController extends Controller
 
         return view('payroll.components.index', [
             'components' => PayComponent::query()->withCount('structureComponents')->orderBy('kind')->orderBy('name')->get(),
-            'component' => $this->blank(),
+            'payComponent' => $this->blank(),
             ...$this->options(),
         ]);
     }
@@ -44,7 +44,7 @@ class PayComponentController extends Controller
     {
         Gate::authorize('update', $payComponent);
 
-        return view('payroll.components.edit', ['component' => $payComponent, ...$this->options()]);
+        return view('payroll.components.edit', ['payComponent' => $payComponent, ...$this->options()]);
     }
 
     public function update(Request $request, PayComponent $payComponent): RedirectResponse

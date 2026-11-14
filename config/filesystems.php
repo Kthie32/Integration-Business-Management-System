@@ -33,7 +33,8 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Private files (employee documents, attachments) are only ever streamed by controllers that check access.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],

@@ -40,6 +40,19 @@ class PayrollConfigurationTest extends TestCase
         $this->assertSame(count(PayrollSeeder::COMPONENTS), PayComponent::query()->count());
     }
 
+    public function test_the_pay_component_list_and_edit_pages_show_the_component_form(): void
+    {
+        $housing = PayComponent::query()->where('code', 'HOUSING')->sole();
+
+        $list = $this->actingAs($this->hr)->get(route('pay-components.index'));
+        $edit = $this->actingAs($this->hr)->get(route('pay-components.edit', $housing));
+
+        $list->assertOk();
+        $list->assertSee('New pay component');
+        $edit->assertOk();
+        $edit->assertSee('value="HOUSING"', false);
+    }
+
     public function test_pay_components_are_created_and_an_allowance_cannot_be_a_percentage_of_gross(): void
     {
         $payload = ['code' => 'risk', 'name' => 'Risk allowance', 'kind' => 'allowance', 'calculation' => 'percent_basic', 'default_value' => '15', 'is_taxable' => '1', 'is_nssf_applicable' => '1', 'is_active' => '1'];
